@@ -42,7 +42,7 @@ int8_t Transport_SendPacket(const char interface, const uint8_t data_length, con
  * ¥arg packet
  * ¥arg timeout
  */
-int8_t Transport_ReceivePacket(uint8_t* packet, const uint32_t& timeout) {
+int8_t Transport_ReceivePacket(uint8_t* packet, const uint8_t buffer_size, const uint32_t& timeout) {
   uint8_t counter = 0;
   uint8_t buf;
   int8_t ret;
@@ -74,6 +74,10 @@ int8_t Transport_ReceivePacket(uint8_t* packet, const uint32_t& timeout) {
   //  timeout)) < 0) {
   //  return ret;
   //}
+
+  if (packet[DATA_LENGTH] > buffer_size-2) {
+    return -BUFFER_OVERFLOW_ERROR;
+  }
 
   if((ret=SerialDevice_read(packet+PACKET_HEADER_SIZE,
     packet[DATA_LENGTH],

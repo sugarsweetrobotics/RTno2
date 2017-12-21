@@ -74,14 +74,16 @@ void setup() {
 void loop() {
   int8_t ret;
   uint32_t timeout = 20*1000;
-  ret = Transport_ReceivePacket((uint8_t*)m_pPacketBuffer, timeout);
+  ret = Transport_ReceivePacket((uint8_t*)m_pPacketBuffer, PACKET_BUFFER_SIZE, timeout);
   if(ret < 0) { // Timeout Error or Checksum Error
     if(ret == -CHECKSUM_ERROR) {
-		 Transport_SendPacket(PACKET_ERROR_CHECKSUM, 1, (int8_t*)&ret);
-	} else if(ret == -TIMEOUT) {
-		 Transport_SendPacket(PACKET_ERROR_TIMEOUT, 1, (int8_t*)&ret);
-	}else {
-    	Transport_SendPacket(PACKET_ERROR, 1, (int8_t*)&ret);
+      Transport_SendPacket(PACKET_ERROR_CHECKSUM, 1, (int8_t*)&ret);
+    } else if(ret == -TIMEOUT) {
+      Transport_SendPacket(PACKET_ERROR_TIMEOUT, 1, (int8_t*)&ret);
+    } else if (ret == -BUFFER_OVERFLOW_ERROR) {
+      Transport_SendPacket(PACKET_ERROR_BUFFEROVERFLOW, 1, (int8_t*)&ret);  
+    } else {
+      Transport_SendPacket(PACKET_ERROR, 1, (int8_t*)&ret);
     }
   } else if (ret == 0) {
 
@@ -134,7 +136,6 @@ void loop() {
     }
     EC_resume();
   }
-  
 }
 
 /**
