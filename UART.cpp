@@ -10,26 +10,26 @@ namespace ssr::rtno {
 
 	RESULT UART_init(unsigned char num, unsigned long baudrate) {
 		switch(num) {
-	#if defined(UBRRH)
-		case 1:
-		m_pSerial = &Serial;
-		break;
-	#endif
-	#if defined(UBRR0H)
-		case 1:
-		m_pSerial = &Serial;
-		break;
-	#endif
-	#if defined(UBRR2H)
-			case 2:
-			m_pSerial = &Serial2;
-			break;
-	#endif
-	#if defined(UBRR3H)
-			case 3:
-			m_pSerial = &Serial3;
-			break;
-	#endif
+	// #if defined(UBRRH)
+	// 	case 1:
+	// 	m_pSerial = &Serial;
+	// 	break;
+	// #endif
+	// #if defined(UBRR0H)
+	// 	case 1:
+	// 	m_pSerial = &Serial;
+	// 	break;
+	// #endif
+	// #if defined(UBRR2H)
+	// 		case 2:
+	// 		m_pSerial = &Serial2;
+	// 		break;
+	// #endif
+	// #if defined(UBRR3H)
+	// 		case 3:
+	// 		m_pSerial = &Serial3;
+	// 		break;
+	// #endif
 		default:
 			m_pSerial = &Serial;
 			// return;
@@ -42,8 +42,8 @@ namespace ssr::rtno {
 		return RESULT::OK;
 	}
 
-	RESULT UART_putc(const uint8_t c) {
-		m_pSerial->write((const uint8_t*)&c, 1);
+	RESULT UART_putc(const uint8_t* c) {
+		m_pSerial->write(c, 1);
 		return RESULT::OK;
 	}
 

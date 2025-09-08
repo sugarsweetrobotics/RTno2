@@ -38,8 +38,8 @@ RESULT EtherTcp_available() {
 }
 
 
-RESULT EtherTcp_putc(const uint8_t c) {
-  m_pServer->write(c);
+RESULT EtherTcp_putc(const uint8_t* c) {
+  m_pServer->write(*c);
   return RESULT::OK;
 }
 

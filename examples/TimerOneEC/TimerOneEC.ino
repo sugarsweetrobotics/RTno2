@@ -1,81 +1,69 @@
 /**
- * joyStick.pde
+ * Timer1EC.pde
  * RTno is RT-middleware and arduino.
  *
- * This program is just for JoyStick Shield sold by spackfun.com
- * 
- * Pin Settings:
- * 
+ * This sample program uses Timer1ExecutionContext.
+ * Timer1ExecutionContext is an ExecutionContext which
+ * calls onExecute function periodically when the RTno
+ * is in ACTIVE state.
+ *
+ * Timer1ExecutionContext uses TimerOne module to make 
+ * the periodic interruption so the period is comparably 
+ * accurate, but the PWM 9, 10 can not be used when TimerOne
+ * is used.
+ *
+ * TimerOne module is originally developed by 
+ * http://code.google.com/p/arduino-timerone/
+ *
+ * This sample program just flash the LED (13th pin)
+ * when RTno is activated.
+ *
+ * Change the exec_cxt.periodic.rate option and confirm 
+ * the flashing period changes.
+ *
+ * @author Yuki Suga
+ * This code is written/distributed for public-domain.
  */
+
+// If you want to use Timer1 Execution Context
+// First, include this header.
+// Second, configure exec_cxt.periodic.type = Timer1EexecutionContext
+// Third, configure exec_cxt.periodic.rate = *** [Hz]
+#include <TimerOne.h>
 #include <RTno.h>
 
 /**
  * This function is called at first.
  * conf._default.baudrate: baudrate of serial communication
- * exec_cxt.periodic.type: reserved but not used.
+ * exec_cxt.periodic.type: Timer1
  */
 void rtcconf(config_str& conf, exec_cxt_str& exec_cxt) {
-  conf._default.connection_type = ConnectionTypeSerial1;
   conf._default.baudrate = 57600;
-  exec_cxt.periodic.type = ProxySynchronousExecutionContext;
+  conf._default.connection_type = ConnectionTypeSerial1;
+  exec_cxt.periodic.type = Timer1ExecutionContext;
+  exec_cxt.periodic.rate = 10; // [Hz]
 }
 
 
-/** 
- * Declaration Division:
- *
- * DataPort and Data Buffer should be placed here.
- *
- * available data types are as follows:
- * TimedLong
- * TimedDouble
- * TimedFloat
- * TimedLongSeq
- * TimedDoubleSeq
- * TimedFloatSeq
- *
- * Please refer following comments. If you need to use some ports,
- * uncomment the line you want to declare.
-**/
+// No InPort and OutPort.
 
-TimedLongSeq stick;
-OutPort<TimedLongSeq> stickOut("stick", stick);
+int LED = 13;
 
-TimedLongSeq button;
-OutPort<TimedLongSeq> buttonOut("button", button);
-
-int channelStickX = 0;
-int channelStickY = 1;
-int channelStickZ = 2;
-
-int dummy;
 //////////////////////////////////////////
 // on_initialize
 //
 // This function is called in the initialization
-// sequence when th processor is turned on.
+// sequence. The sequence is triggered by the
+// PC. When the RTnoRTC is launched in the PC,
+// then, this function is remotely called
+// through the USB cable.
 // In on_initialize, usually DataPorts are added.
 //
 //////////////////////////////////////////
 int onInitialize() {
-  /* Data Ports are added in this section.*/
-  
-  addOutPort(stickOut);
-  addOutPort(buttonOut);
-
-  pinMode(channelStickX, INPUT);
-  pinMode(channelStickY, INPUT);
-  pinMode(channelStickZ, INPUT);
-  digitalWrite(channelStickZ, HIGH);
-  
-  pinMode(3, INPUT_PULLUP);
-  pinMode(4, INPUT_PULLUP);
-  pinMode(5, INPUT_PULLUP);
-  pinMode(6, INPUT_PULLUP);
-  
-  stick.data.length(3);
-  button.data.length(4);
-  
+  // LED pin Initialization
+  pinMode(LED, OUTPUT);
+  digitalWrite(LED, LOW);
   return RTC_OK; 
 }
 
@@ -113,21 +101,17 @@ int onDeactivated()
 // ERROR condition.r
 //////////////////////////////////////////////
 int onExecute() {
-  /*
-  * Output digital data in Voltage unit.
-  */
-  stick.data[0] = analogRead(channelStickX); 
-  stick.data[1] = analogRead(channelStickY);
-  stick.data[2] = digitalRead(channelStickZ);
-  stickOut.write();
-  
-  button.data[0] = digitalRead(3);
-  button.data[1] = digitalRead(4);
-  button.data[2] = digitalRead(5);
-  button.data[3] = digitalRead(6);
-  buttonOut.write();
 
-  return RTC_OK;
+  static int i;
+  i++;
+  if(i == 10) {
+    digitalWrite(LED, HIGH);
+  } else if(i == 20) {
+    digitalWrite(LED, LOW);
+    i = 0;
+  }
+
+  return RTC_OK; 
 }
 
 
@@ -155,6 +139,8 @@ int onReset()
 {
   return RTC_OK;
 }
+
+
 
 //////////////////////////////////////////
 // DO NOT MODIFY THESE FUNCTIONS

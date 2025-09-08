@@ -45,10 +45,10 @@ class InPort : public InPortBase {
     uint8_t dataSize = pPortBuffer->getNextDataSize(pPortBuffer);
     if(TypeCode_isSequence(m_Data.typeCode)) {
       ((SequenceBase*)&(m_Data.data))->length(dataSize/TypeCode_getElementSize(m_Data.typeCode));
-      pPortBuffer->pop(pPortBuffer, (int8_t*)((SequenceBase*)&(m_Data.data))->getData(), dataSize);
+      pPortBuffer->pop(pPortBuffer, (uint8_t*)((SequenceBase*)&(m_Data.data))->getData(), dataSize);
     } else {
     // This code must be okay for little endian system.
-      pPortBuffer->pop(pPortBuffer, (int8_t*)&(m_Data.data), dataSize);
+      pPortBuffer->pop(pPortBuffer, (uint8_t*)&(m_Data.data), dataSize);
     }
     return dataSize;
   }

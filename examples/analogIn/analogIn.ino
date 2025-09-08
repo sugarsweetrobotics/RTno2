@@ -20,7 +20,6 @@
  * These functions are spontaneously called by the RTno-proxy
  *  RT-component which is launched in the PC.
  */
-#include <UART.h>
 #include <RTno.h>
 
 /**
@@ -30,47 +29,57 @@
  */
 void rtcconf(config_str& conf, exec_cxt_str& exec_cxt) {
   conf._default.connection_type = ConnectionTypeSerial1;
+  // conf._default.connection_type = ConnectionTypeSerial2; // This configuration is avaiable in Arduino-Mega
+  // conf._default.connection_type = ConnectionTypeSerial3; // This configuration is avaiable in Arduino-Mega
+  // conf._default.connection_type = ConnectionTypeEtherTcp; // This configuration is avaiable with Ethernet Shield.
   conf._default.baudrate = 57600;
   exec_cxt.periodic.type = ProxySynchronousExecutionContext;
+  
+  // Configurations Below are configuration parameter for EtherTcp connection.
+  // conf._default.port = 23;
+  // conf._default.mac_address = MacAddr(0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED);
+  // conf._default.ip_address = IPAddr(192,168,42,100);
+  // conf._default.subnet_mask = IPAddr(255,255,255,0);
+  // conf._default.default_gateway = IPAddr(192,168,42,254);
+
+  // exec_cxt.periodic.type = Timer1ExecutionContext; // onExecute is called by Timer1. Period must be specified by 'rate' option.
+  // *caution: TimerOne can not be used with PWM 9, 10.
+  // exec_cxt.periodic.rate = 1000; // [Hz] This option is indispensable when type is Timer*ExecutionContext.
 }
+
 
 /** 
  * Declaration Division:
  *
  * DataPort and Data Buffer should be placed here.
  *
- * Currently, following 6 types are available.
- * TimedLong:
- * TimedDouble:
- * TimedFloat:
- * TimedLongSeq:
- * TimedDoubleSeq:
- * TimedFloatSeq:
+ * available data types are as follows:
+ * TimedLong
+ * TimedDouble
+ * TimedFloat
+ * TimedLongSeq
+ * TimedDoubleSeq
+ * TimedFloatSeq
  *
  * Please refer following comments. If you need to use some ports,
  * uncomment the line you want to declare.
  **/
+
 TimedFloatSeq out0;
 OutPort<TimedFloatSeq> out0Out("out0", out0);
+
 
 //////////////////////////////////////////
 // on_initialize
 //
 // This function is called in the initialization
-// sequence. The sequence is triggered by the
-// PC. When the RTnoRTC is launched in the PC,
-// then, this function is remotely called
-// through the USB cable.
+// sequence when th processor is turned on.
 // In on_initialize, usually DataPorts are added.
 //
 //////////////////////////////////////////
-int RTno::onInitialize() {
-  /* Data Ports are added in this section.
-  */
+int onInitialize() {
+  /* Data Ports are added in this section.*/
   addOutPort(out0Out);
-  
-  // Some initialization (like port direction setting)
-
   return RTC_OK; 
 }
 
@@ -82,7 +91,7 @@ int RTno::onInitialize() {
 // If this function is failed (return value 
 // is RTC_ERROR), RTno will enter ERROR condition.
 ////////////////////////////////////////////
-int RTno::onActivated() {
+int onActivated() {
   // Write here initialization code.
   
   return RTC_OK; 
@@ -93,7 +102,7 @@ int RTno::onActivated() {
 // This function is called when the RTnoRTC
 // is deactivated.
 /////////////////////////////////////////////
-int RTno::onDeactivated()
+int onDeactivated()
 {
   // Write here finalization code.
 
@@ -107,18 +116,16 @@ int RTno::onDeactivated()
 // RTC_ERROR), RTno immediately enter into the 
 // ERROR condition.r
 //////////////////////////////////////////////
-int RTno::onExecute() {
-
+int onExecute() {
   /*
-   * Output analog data in Voltage unit.
-   */
+  * Output analog data in Voltage unit.
+  */
   out0.data.length(6);
   for(int i = 0;i < 6;i++) {
     out0.data[i] = (analogRead(i) * 5.0f) / 1024;
   }
   out0Out.write();
-    
-  return RTC_OK; 
+  return RTC_OK;
 }
 
 
@@ -129,7 +136,7 @@ int RTno::onExecute() {
 // The ERROR condition can be recovered,
 // when the RTno is reset.
 ///////////////////////////////////////
-int RTno::onError()
+int onError()
 {
   return RTC_OK;
 }
@@ -142,9 +149,21 @@ int RTno::onError()
 // (return value is RTC_ERROR), RTno
 // will stay in ERROR condition.ec
 ///////////////////////////////////////
-int RTno::onReset()
+int onReset()
 {
   return RTC_OK;
 }
 
+//////////////////////////////////////////
+// DO NOT MODIFY THESE FUNCTIONS
+//////////////////////////////////////////
+void setup() {
+  RTno_setup(onInitialize, onActivated, onDeactivated, onExecute, onError, onReset);
+}
 
+//////////////////////////////////////////
+// DO NOT MODIFY THESE FUNCTIONS
+//////////////////////////////////////////
+void loop() {
+  RTno_loop();
+}

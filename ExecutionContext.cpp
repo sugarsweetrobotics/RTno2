@@ -1,15 +1,18 @@
 #define RTNO_SUBMODULE_DEFINE
 
 #include <stdint.h>
-#include "RTno.h"
+// #include "RTno.h"
+#include "rtcconf.h"
 #include "Packet.h"
 
 #include "ExecutionContext.h"
 
+class DataFlowComponentBase;
+
 static int8_t m_Type;
 static LifeCycleState m_Condition;
 
-extern DataFlowComponentBase* __rtc;
+// extern DataFlowComponentBase* __rtc;
 
 // void EC_init(int8_t Type) {
 //   m_Type = Type;
@@ -66,14 +69,14 @@ extern DataFlowComponentBase* __rtc;
 //   }
 // }
 
-ReturnValue_t EC_error() {
-  if(m_Condition != RTC_STATE_ERROR) {
-    return RTC_PRECONDITION_NOT_MET;
-  }
+// ReturnValue_t EC_error() {
+//   if(m_Condition != RTC_STATE_ERROR) {
+//     return RTC_PRECONDITION_NOT_MET;
+//   }
   
-  __rtc->onError();
-  return RTC_OK;
-}
+//   __rtc->onError();
+//   return RTC_OK;
+// }
 
 
 #ifdef __cplusplus

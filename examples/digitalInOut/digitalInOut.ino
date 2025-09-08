@@ -43,6 +43,9 @@ void rtcconf(config_str& conf, exec_cxt_str& exec_cxt) {
   exec_cxt.periodic.type = ProxySynchronousExecutionContext;
 }
 
+
+
+
 /** 
  * Declaration Division:
  *
@@ -65,18 +68,18 @@ InPort<TimedLongSeq> in0In("in0", in0);
 TimedLongSeq out0;
 OutPort<TimedLongSeq> out0Out("out0", out0);
 
+int dummy;
+
+
 //////////////////////////////////////////
 // on_initialize
 //
 // This function is called in the initialization
-// sequence. The sequence is triggered by the
-// PC. When the RTnoRTC is launched in the PC,
-// then, this function is remotely called
-// through the USB cable.
+// sequence when th processor is turned on.
 // In on_initialize, usually DataPorts are added.
 //
 //////////////////////////////////////////
-int RTno::onInitialize() {
+int onInitialize() {
   /* Data Ports are added in this section.
   */
   addInPort(in0In);
@@ -89,8 +92,8 @@ int RTno::onInitialize() {
   for(int i = 0;i < 6;i++) {
     pinMode(8+i, OUTPUT);
   }
-   
-  return RTC_OK; 
+  
+  return RTC_OK;
 }
 
 ////////////////////////////////////////////
@@ -101,23 +104,23 @@ int RTno::onInitialize() {
 // If this function is failed (return value 
 // is RTC_ERROR), RTno will enter ERROR condition.
 ////////////////////////////////////////////
-int RTno::onActivated() {
-  // Write here initialization code.
+// int onActivated() {
+//   // Write here initialization code.
   
-  return RTC_OK; 
-}
+//   return RTC_OK; 
+// }
 
 /////////////////////////////////////////////
-// on_deactfivated
+// on_deactivated
 // This function is called when the RTnoRTC
 // is deactivated.
 /////////////////////////////////////////////
-int RTno::onDeactivated()
-{
-  // Write here finalization code.
+// int onDeactivated()
+// {
+//   // Write here finalization code.
 
-  return RTC_OK;
-}
+//   return RTC_OK;
+// }
 
 //////////////////////////////////////////////
 // This function is repeatedly called when the 
@@ -126,11 +129,11 @@ int RTno::onDeactivated()
 // RTC_ERROR), RTno immediately enter into the 
 // ERROR condition.r
 //////////////////////////////////////////////
-int RTno::onExecute() {
+int onExecute() {
   /*
-   * Input digital data
-   */
-   
+  * Input digital data
+  */
+  
   if(in0In.isNew()) {
     in0In.read();
     for(int i = 0;i < in0.data.length() && i < 6;i++) {
@@ -138,10 +141,9 @@ int RTno::onExecute() {
     }
   }
   
-  
   /*
-   * Output digital data in Voltage unit.
-   */
+  * Output digital data in Voltage unit.
+  */
   out0.data.length(6);
   for(int i = 0;i < 6;i++) {
     out0.data[i] = digitalRead(2+i);
@@ -159,7 +161,7 @@ int RTno::onExecute() {
 // The ERROR condition can be recovered,
 // when the RTno is reset.
 ///////////////////////////////////////
-int RTno::onError()
+int onError()
 {
   return RTC_OK;
 }
@@ -172,9 +174,22 @@ int RTno::onError()
 // (return value is RTC_ERROR), RTno
 // will stay in ERROR condition.ec
 ///////////////////////////////////////
-int RTno::onReset()
+int onReset()
 {
   return RTC_OK;
 }
 
 
+//////////////////////////////////////////
+// DO NOT MODIFY THESE FUNCTIONS
+//////////////////////////////////////////
+void setup() {
+  RTno_setup(onInitialize, onActivated, onDeactivated, onExecute, onError, onReset);
+}
+
+//////////////////////////////////////////
+// DO NOT MODIFY THESE FUNCTIONS
+//////////////////////////////////////////
+void loop() {
+  RTno_loop();
+}

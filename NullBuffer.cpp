@@ -4,13 +4,13 @@
 #include "NullBuffer.h"
 
 struct NullBuffer_private {
-  int8_t *pData;
+  uint8_t *pData;
   uint8_t size;
   uint8_t isUpdated;
 };
 
-void NullBuffer_push(PortBuffer* _this, const int8_t* data, uint8_t size);
-void NullBuffer_pop(PortBuffer* _this, int8_t* dst, uint8_t size);
+void NullBuffer_push(PortBuffer* _this, const uint8_t* data, uint8_t size);
+void NullBuffer_pop(PortBuffer* _this, uint8_t* dst, uint8_t size);
 uint8_t NullBuffer_getNextDataSize(PortBuffer* _this);
 uint8_t NullBuffer_hasNext(PortBuffer* _this);
 
@@ -40,19 +40,19 @@ void NullBuffer_destroy(PortBuffer* _this) {
   free(_this);
 }
 
-void NullBuffer_push(PortBuffer* _this, const int8_t* data, uint8_t size) {
+void NullBuffer_push(PortBuffer* _this, const uint8_t* data, uint8_t size) {
   struct NullBuffer_private* nullBuffer = 
     (struct NullBuffer_private*)(_this->privateData);
   if(size != nullBuffer->size) {
     free(nullBuffer->pData);
-    nullBuffer->pData = (int8_t*)malloc(size);
+    nullBuffer->pData = (uint8_t*)malloc(size);
     nullBuffer->size = size;
   }
   memcpy(nullBuffer->pData, data, size);
   nullBuffer->isUpdated = 1;
 }
 
-void NullBuffer_pop(PortBuffer* _this, int8_t* dst, uint8_t size)
+void NullBuffer_pop(PortBuffer* _this, uint8_t* dst, uint8_t size)
 {
   struct NullBuffer_private* nullBuffer = 
     (struct NullBuffer_private*)(_this->privateData);

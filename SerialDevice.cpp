@@ -4,7 +4,7 @@
 namespace ssr::rtno {
 
 RESULT (*SerialDevice_available)();
-RESULT (*SerialDevice_putc)(const uint8_t c);
+RESULT (*SerialDevice_putc)(const uint8_t* c);
 RESULT (*SerialDevice_getc)(uint8_t* c);
 
 RESULT SerialDevice_read(uint8_t* buffer, const uint8_t size, uint8_t* size_read, const duration_t& wait_usec)

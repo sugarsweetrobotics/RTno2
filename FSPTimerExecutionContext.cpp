@@ -1,5 +1,8 @@
 #define RTNO_SUBMODULE_DEFINE
 
+
+#if defined(__arm__)
+
 #include <stdint.h>
 #include <Arduino.h>
 #include "RTno.h"
@@ -8,12 +11,11 @@
 //#include <avr/io.h>
 //#include <avr/interrupt.h>
 
-#ifdef USE_FSPTIMER_EC
 
 #include <FspTimer.h>
 
 
-FspTimer _timer;
+FspTimer *_timer;
 
 static int32_t m_Period;
 static bool m_Suspend = 0;
@@ -24,7 +26,7 @@ void FSPTimerEC_suspend();
 void FSPTimerEC_resume();
 
 void FSPTimerEC_execute(timer_callback_args_t *arg) {
-    if (m_Suspend) {
+    if (!m_Suspend) {
         FSPTimerEC_returnValue = EC_execute();
     }
 }
@@ -32,26 +34,30 @@ void FSPTimerEC_execute(timer_callback_args_t *arg) {
 
 void FSPTimerEC_init(double rate)
 {
-  EC_init(0x22);
+  EC_init(0x24);
+
+  _timer = new FspTimer();
 
   uint8_t type;
-  int8_t ch = FspTimer::get_available_timer(type);
-  if (ch < 0) {
+  int8_t timer_ch = FspTimer::get_available_timer(type);
+  if (timer_ch < 0) {
+    EC_fault();
     return;
   }
-  _timer.begin(TIMER_MODE_PERIODIC, type, ch, (float)rate, 0.0f, FSPTimerEC_execute, nullptr);
+  _timer->begin(TIMER_MODE_PERIODIC, type,  static_cast<uint8_t>(timer_ch), (float)rate, 0.0f, FSPTimerEC_execute, nullptr);
   
 
   EC_start = FSPTimerEC_start;
   EC_suspend = FSPTimerEC_suspend;
   EC_resume = FSPTimerEC_resume;
+
 }
 
 void FSPTimerEC_start()
 {
-  _timer.setup_overflow_irq();
-  _timer.open();
-  _timer.start();
+  _timer->setup_overflow_irq();
+  _timer->open();
+  _timer->start();
 }
 
 void FSPTimerEC_suspend()

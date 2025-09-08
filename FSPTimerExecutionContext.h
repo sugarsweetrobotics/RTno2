@@ -1,17 +1,12 @@
 #ifndef FSPTIMER_EXECUTION_CONTEXT
 #define FSPTIMER_EXECUTION_CONTEXT
 
-#include "ExecutionContext.h"
+#if defined(__arm__)
 
-#ifdef __cplusplus
-//extern "C" {
-#endif
+#include "ExecutionContext.h"
 
 void FSPTimerEC_init(double microsecond);
 
-#ifdef __cplusplus
-//}
 #endif
-
 
 #endif

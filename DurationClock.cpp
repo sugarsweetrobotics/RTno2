@@ -7,11 +7,11 @@ namespace ssr::rtno {
 static duration_t start_time;
 
 void DurationClock_tick() {
-    start_time = micros();
+    start_time = millis();
 }
 
 duration_t DurationClock_tack() {
-    return micros() - start_time;
+    return millis() - start_time;
 }
 
 } // namespace ssr::rtno

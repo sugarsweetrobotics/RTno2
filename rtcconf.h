@@ -2,6 +2,10 @@
 #define RTC_CONF_HEADER_INCLUDED
 
 
+#define RTC_OK 0
+#define RTC_ERROR -1
+#define RTC_PRECONDITION_NOT_MET -2
+
 #ifdef USE_ETHERNET_CONNECTION
 
 #define IPaddr(a1, a2, a3, a4) \
@@ -40,9 +44,7 @@ struct config_str {
 
 struct exec_cxt_str {
   struct periodic_str {
-    //#ifdef USE_TIMER1_EC
     float rate;
-    //#endif
     uint8_t type;
   }periodic;
 };
@@ -65,5 +67,9 @@ struct exec_cxt_str {
 #endif
 
 #define Timer2ExecutionContext 0x23
+
+#define FSPTimerExecutionContext 0x24
+
+#define TimerOneExecutionContext 0x25
 
 #endif

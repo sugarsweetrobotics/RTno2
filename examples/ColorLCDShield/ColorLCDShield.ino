@@ -24,7 +24,6 @@
  * which is distributed under the terms of Creative commons share-alike 3.0
  * 
  */
-#include <UART.h>
 #include <RTno.h>
 #include <ColorLCDShield.h>
 
@@ -39,17 +38,7 @@ void rtcconf(config_str& conf, exec_cxt_str& exec_cxt) {
   exec_cxt.periodic.type = ProxySynchronousExecutionContext;
 }
 
-TimedFloatSeq in0;
-InPort<TimedFloatSeq> in0In("rgb", in0);
 
-TimedLongSeq out0;
-OutPort<TimedLongSeq> out0Out("out0", out0);
-
-LCDShield lcd;
-int buttonPins[3] = {3, 4, 5};
-
-
-int logo_color = BLUE;
 
 char rt_logo[1120] = {
 0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
@@ -146,25 +135,54 @@ void printRTLogo(int color)
 }
 
 
+
+/** 
+ * Declaration Division:
+ *
+ * DataPort and Data Buffer should be placed here.
+ *
+ * available data types are as follows:
+ * TimedLong
+ * TimedDouble
+ * TimedFloat
+ * TimedLongSeq
+ * TimedDoubleSeq
+ * TimedFloatSeq
+ *
+ * Please refer following comments. If you need to use some ports,
+ * uncomment the line you want to declare.
+ **/
+
+TimedFloatSeq rgb;
+InPort<TimedFloatSeq> rgbIn("rgb", rgb);
+
+TimedLongSeq out0;
+OutPort<TimedLongSeq> out0Out("out0", out0);
+
+LCDShield lcd;
+int buttonPins[3] = {3, 4, 5};
+
+
+int logo_color = BLUE;
+
+int dummy;
+
 //////////////////////////////////////////
 // on_initialize
 //
 // This function is called in the initialization
-// sequence. The sequence is triggered by the
-// PC. When the RTnoRTC is launched in the PC,
-// then, this function is remotely called
-// through the USB cable.
+// sequence when th processor is turned on.
 // In on_initialize, usually DataPorts are added.
 //
 //////////////////////////////////////////
-int RTno::onInitialize() {
+int onInitialize() {
   lcd.init(PHILLIPS);
   lcd.contrast(30);
   lcd.clear(BLACK);
   printRTLogo(WHITE);
 
   /* Data Ports are added in this section. */
-  addInPort(in0In);
+  addInPort(rgbIn);
   addOutPort(out0Out);
   
   for(int i = 0;i < 3;i++) {
@@ -186,7 +204,7 @@ int RTno::onInitialize() {
 // If this function is failed (return value 
 // is RTC_ERROR), RTno will enter ERROR condition.
 ////////////////////////////////////////////
-int RTno::onActivated() {
+int onActivated() {
   // Write here initialization code.
   printRTLogo(GREEN);
   lcd.setStr("Activated   ", 80, 0, GREEN, BLACK);
@@ -199,11 +217,12 @@ int RTno::onActivated() {
 // This function is called when the RTnoRTC
 // is deactivated.
 /////////////////////////////////////////////
-int RTno::onDeactivated()
+int onDeactivated()
 {
   // Write here finalization code.
   printRTLogo(BLUE);
   lcd.setStr("Dectivated   ", 80, 0, BLUE, BLACK);
+
   return RTC_OK;
 }
 
@@ -212,15 +231,14 @@ int RTno::onDeactivated()
 // RTno is in the ACTIVE condition.
 // If this function is failed (return value is
 // RTC_ERROR), RTno immediately enter into the 
-// ERROR condition.
+// ERROR condition.r
 //////////////////////////////////////////////
-int RTno::onExecute() {
-
-  if(in0In.isNew()) {
-    in0In.read();
-    double r = in0.data[0];
-    double g = in0.data[1];
-    double b = in0.data[2];
+int onExecute() {
+  if(rgbIn.isNew()) {
+    rgbIn.read();
+    double r = rgb.data[0];
+    double g = rgb.data[1];
+    double b = rgb.data[2];
 
     if(r > 1)  r = 1.0; else if(r < 0) r = 0.0;
     if(g > 1)  g = 1.0; else if(g < 0) g = 0.0;
@@ -243,8 +261,8 @@ int RTno::onExecute() {
     out0.data[i] = digitalRead(buttonPins[i]);
   }
   out0Out.write();
-    
-  return RTC_OK; 
+
+  return RTC_OK;
 }
 
 
@@ -255,7 +273,7 @@ int RTno::onExecute() {
 // The ERROR condition can be recovered,
 // when the RTno is reset.
 ///////////////////////////////////////
-int RTno::onError()
+int onError()
 {
   return RTC_OK;
 }
@@ -268,9 +286,22 @@ int RTno::onError()
 // (return value is RTC_ERROR), RTno
 // will stay in ERROR condition.ec
 ///////////////////////////////////////
-int RTno::onReset()
+int onReset()
 {
   return RTC_OK;
 }
 
 
+//////////////////////////////////////////
+// DO NOT MODIFY THESE FUNCTIONS
+//////////////////////////////////////////
+void setup() {
+  RTno_setup(onInitialize, onActivated, onDeactivated, onExecute, onError, onReset);
+}
+
+//////////////////////////////////////////
+// DO NOT MODIFY THESE FUNCTIONS
+//////////////////////////////////////////
+void loop() {
+  RTno_loop();
+}

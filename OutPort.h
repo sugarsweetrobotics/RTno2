@@ -45,10 +45,10 @@ class OutPort : public OutPortBase {
     if(TypeCode_isSequence(m_pData->typeCode)) {
       size *= ((SequenceBase*)&(m_pData->data))->length();
       pPortBuffer->push(pPortBuffer,
-			(int8_t*)((SequenceBase*)&(m_pData->data))->getData(),
+			(uint8_t*)((SequenceBase*)&(m_pData->data))->getData(),
 			size);
     } else {
-      pPortBuffer->push(pPortBuffer, (const int8_t*)&(m_pData->data), size);
+      pPortBuffer->push(pPortBuffer, (const uint8_t*)&(m_pData->data), size);
     }
     return size;
   }

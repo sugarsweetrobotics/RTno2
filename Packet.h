@@ -20,9 +20,10 @@
 
 // Packet Settings
 #define STARTING_HEADER_SIZE 2
-#define PACKET_HEADER_SIZE 2
+#define PACKET_HEADER_SIZE 3
 #define INTERFACE 0
-#define DATA_LENGTH 1
+#define PACKET_INDEX_RESULT 1
+#define DATA_LENGTH 2
 //#define DATA_START_ADDR 2+4
 
 #define PACKET_STARTING_CHARACTOR_0 0x0a

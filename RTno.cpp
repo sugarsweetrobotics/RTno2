@@ -23,7 +23,7 @@ using namespace ssr::rtno;
 #define PRIVATE static
 
 
-PRIVATE int8_t m_pPacketBuffer[PACKET_BUFFER_SIZE];
+PRIVATE uint8_t m_pPacketBuffer[PACKET_BUFFER_SIZE];
 
 /*
  * Send Profile Data
@@ -46,6 +46,9 @@ PRIVATE void _PacketHandlerOnInactive();
 PRIVATE void _PacketHandlerOnActive();
 
 void EC_setup(exec_cxt_str& exec_cxt);
+
+ReturnValue_t EC_fault();
+
 void Connection_setup(config_str& conf);
 
 void Connection_setup(config_str& conf) {
@@ -79,30 +82,62 @@ void Connection_setup(config_str& conf) {
 }
 
 
-DataFlowComponentBase* __rtc;
+// DataFlowComponentBase* __rtc;
 
 void EC_setup(exec_cxt_str& exec_cxt);
+
+int(*RTno_onInitialize)();
+int(*RTno_onActivated)();
+int(*RTno_onDeactivated)();
+int(*RTno_onExecute)();
+int(*RTno_onError)();
+int(*RTno_onReset)();
 
 /**
  * Arduino Setup Routine.
  * This function is called when arduino device is turned on.
  */
-void RTno_setup(DataFlowComponentBase* rtc) {
-  __rtc = rtc;
+void RTno_setup(int(*on_initialize)(), int(*on_activated)(), int(*on_deactivated)(), int(*on_execute)(), int(*on_error)(), int(*on_reset)()) {
+
   RTnoProfile_init();
-  // This function must be called first.
+  RTno_onInitialize = on_initialize;
+  RTno_onActivated = on_activated;
+  RTno_onDeactivated = on_deactivated;
+  RTno_onExecute = on_execute;
+  RTno_onReset = on_reset;
+  RTno_onError = on_error;
+
   exec_cxt_str* exec_cxt = (exec_cxt_str*)malloc(sizeof(exec_cxt_str));
   config_str* conf = (config_str*)malloc(sizeof(config_str));
   rtcconf(*conf, *exec_cxt);
-  if(__rtc->onInitialize() == RTC_OK) {
-      EC_setup(*exec_cxt);
-      Connection_setup(*conf);
-      free(exec_cxt);
-      free(conf);
-      Transport_init();
-      EC_start();
+  if(RTno_onInitialize() == RTC_OK) {
+    EC_setup(*exec_cxt);
+    Connection_setup(*conf);
+    free(exec_cxt);
+    free(conf);
+    Transport_init();
+    EC_start();
   }
+  return;
 }
+//void RTno_setup(int(*on_initialize)()) {
+// void RTno_setup(DataFlowComponentBase* rtc) {
+//   __rtc = rtc;
+//   RTnoProfile_init();
+//   // This function must be called first.
+//   exec_cxt_str* exec_cxt = (exec_cxt_str*)malloc(sizeof(exec_cxt_str));
+//   config_str* conf = (config_str*)malloc(sizeof(config_str));
+//   rtcconf(*conf, *exec_cxt);
+//   if(__rtc->onInitialize() == RTC_OK) {
+//     EC_setup(*exec_cxt);
+//     Connection_setup(*conf);
+//     free(exec_cxt);
+//     free(conf);
+//     Transport_init();
+//     EC_start();
+//   }
+//   return;
+// }
 
 
 static int8_t m_Type = 0;
@@ -127,7 +162,8 @@ ReturnValue_t EC_activate_component() {
     return RTC_PRECONDITION_NOT_MET;
   }
   
-  if(__rtc->onActivated() == RTC_OK) {
+  // if(__rtc->onActivated() == RTC_OK) {
+  if(RTno_onActivated() == RTC_OK) {
     m_Condition = RTC_STATE_ACTIVE;
     return RTC_OK;
   }
@@ -136,13 +172,18 @@ ReturnValue_t EC_activate_component() {
   return RTC_ERROR;
 }
 
+ReturnValue_t EC_fault() {
+  m_Condition = RTC_STATE_ERROR;
+  return RTC_OK;
+}
 
 ReturnValue_t EC_deactivate_component() {
   if(m_Condition != RTC_STATE_ACTIVE) {
     return RTC_PRECONDITION_NOT_MET;
   }
   
-  if(__rtc->onDeactivated() == RTC_OK) {
+  // if(__rtc->onDeactivated() == RTC_OK) {
+  if(RTno_onDeactivated() == RTC_OK) {
     m_Condition = RTC_STATE_INACTIVE;
     return RTC_OK;
   } else {
@@ -158,7 +199,8 @@ ReturnValue_t EC_execute() {
     return RTC_PRECONDITION_NOT_MET;
   }
   
-  if(__rtc->onExecute() == RTC_OK) {
+  // if(__rtc->onExecute() == RTC_OK) {
+  if(RTno_onExecute() == RTC_OK) {
     return RTC_OK;
   } else {
     m_Condition = RTC_STATE_ERROR;
@@ -168,31 +210,53 @@ ReturnValue_t EC_execute() {
 
 
 void EC_setup(exec_cxt_str& exec_cxt) {
-   switch(exec_cxt.periodic.type) {
+  switch(exec_cxt.periodic.type) {
 // #ifdef USE_TIMER1_EC
 //   case Timer1ExecutionContext:
 //     Timer1EC_init(exec_cxt.periodic.rate);
 //     break;
 // #endif // USE_TIMER1_EC
 //   case ProxySynchronousExecutionContext:
-   default:
-     ProxySyncEC_init();
-     break;
-   }
+#if defined(__AVR__)
+  case FSPTimerExecutionContext:
+    TimerOneEC_init(exec_cxt.periodic.rate);
+    break;
+#endif
+#if defined(__arm__)
+  case FSPTimerExecutionContext:
+    FSPTimerEC_init(exec_cxt.periodic.rate);
+    break;
+#endif
+  default:
+    ProxySyncEC_init();
+    break;
+  }
+}
+
+
+RESULT to_result(ReturnValue_t& retval) {
+  switch(retval) {
+    case RTC_OK: return RESULT::OK;
+    case RTC_ERROR: return RESULT::ERROR;
+    default: return RESULT::NONE;
+  }
 }
 
 void RTno_loop() {
   RESULT ret;
   uint8_t size_read;
-  uint32_t timeout = 20*1000*1000;
+  uint32_t timeout = 100; // ms
   ret = Transport_ReceivePacket((uint8_t*)m_pPacketBuffer, &size_read, timeout);
   if(ret != RESULT::OK) { // Timeout Error or Checksum Error
-    if (ret == RESULT::PACKET_HEADER_TIMEOUT) {
+    if (ret == RESULT::PACKET_START_TIMEOUT) {
       return;
     }
-    Transport_SendPacket(COMMAND::PACKET_ERROR, ret, 1, (int8_t*)&ret);
+    ret = (RESULT)m_pPacketBuffer[2];
+    Transport_SendPacket(COMMAND::PACKET_ERROR, ret, 1, (uint8_t*)&ret);
     return;
-  } else { 
+  } 
+  else { 
+    
     switch ((COMMAND)m_pPacketBuffer[INTERFACE]) {
       case COMMAND::GET_PROFILE: 
         _SendProfile();
@@ -200,13 +264,13 @@ void RTno_loop() {
       case COMMAND::GET_STATE: 
       {
         int8_t state = EC_get_component_state();
-        Transport_SendPacket(COMMAND::GET_STATE, ret, 1, &state);
+        Transport_SendPacket(COMMAND::GET_STATE, ret, 1, (uint8_t*)&state);
         break;
       }
       case COMMAND::GET_CONTEXT_TYPE:
       {
         int8_t type = EC_get_type();
-        Transport_SendPacket(COMMAND::GET_CONTEXT_TYPE, ret, 1, &type);
+        Transport_SendPacket(COMMAND::GET_CONTEXT_TYPE, ret, 1, (uint8_t*)&type);
         break;
       }
       case COMMAND::ACTIVATE:
@@ -216,7 +280,7 @@ void RTno_loop() {
           Transport_SendPacket(COMMAND::ACTIVATE, ret, 0, NULL);      
         } else {
           int8_t retval = EC_activate_component();
-          Transport_SendPacket(COMMAND::ACTIVATE, ret, 1,  &retval);      
+          Transport_SendPacket(COMMAND::ACTIVATE, ret, 1, (uint8_t*) &retval);      
         }
         break;
       }
@@ -227,7 +291,7 @@ void RTno_loop() {
           Transport_SendPacket(COMMAND::DEACTIVATE, ret, 0, NULL);      
         } else {
           int8_t retval = EC_deactivate_component();
-          Transport_SendPacket(COMMAND::DEACTIVATE, ret, 1, &retval);      
+          Transport_SendPacket(COMMAND::DEACTIVATE, ret, 1, (uint8_t*)&retval);      
         }
         break;
       }
@@ -238,63 +302,62 @@ void RTno_loop() {
           Transport_SendPacket(COMMAND::EXECUTE, ret, 0, NULL);      
         } else {
           int8_t retval = EC_execute();
-          Transport_SendPacket(COMMAND::EXECUTE, ret, 1, &retval);      
+          Transport_SendPacket(COMMAND::EXECUTE, ret, 1, (uint8_t*)&retval);      
         }
         break;
       }
       case COMMAND::SEND_DATA:
       {
-        if (EC_get_component_state() != RTC_STATE_ACTIVE) {
-          const RESULT ret = RESULT::INVALID_PRESTATE;
-          Transport_SendPacket(COMMAND::EXECUTE, ret, 0, NULL);       
-        } else {
-          PortBase* pInPort = RTnoProfile_getInPort((char*)m_pPacketBuffer + 2 + 2, m_pPacketBuffer[2]);
+        const uint8_t data_length_area_size = 2; // namelen + datalen
+        const uint8_t name_len = m_pPacketBuffer[PACKET_HEADER_SIZE];
+        const uint8_t data_len = m_pPacketBuffer[PACKET_HEADER_SIZE+1];
+          PortBase* pInPort = RTnoProfile_getInPort((char*)m_pPacketBuffer + PACKET_HEADER_SIZE + data_length_area_size, name_len);
           if(pInPort == NULL) {
             const RESULT ret = RESULT::INPORT_NOT_FOUND; 
             Transport_SendPacket(COMMAND::SEND_DATA, ret, 0, NULL);
           } else {
             PortBuffer* pBuffer = pInPort->pPortBuffer;
             EC_suspend();
-            pBuffer->push(pBuffer,&(m_pPacketBuffer[2 + 2 + m_pPacketBuffer[2]]), m_pPacketBuffer[2+1]);
+            pBuffer->push(pBuffer,(const uint8_t*)&(m_pPacketBuffer[PACKET_HEADER_SIZE + data_length_area_size + name_len]), data_len);
             EC_resume();
             const RESULT ret = RESULT::OK;
             Transport_SendPacket(COMMAND::SEND_DATA, ret, 0, NULL);
           }
-        }
+        //}
         break;
       }
       case COMMAND::RECEIVE_DATA:
       {
-        if (EC_get_component_state() != RTC_STATE_ACTIVE) {
-          const RESULT ret = RESULT::INVALID_PRESTATE;
-          Transport_SendPacket(COMMAND::EXECUTE, ret, 0, NULL);       
-        } else {
+        
+        
+        const uint8_t nameLen = m_pPacketBuffer[PACKET_HEADER_SIZE];
+
           int numOutPort = RTnoProfile_getNumOutPort();
           for(int i = 0;i < numOutPort;i++) {
             EC_suspend();
             
-            PortBase* pOutPort = RTnoProfile_getOutPort((char*)m_pPacketBuffer + 2 + 2, m_pPacketBuffer[2]);
+            PortBase* pOutPort = RTnoProfile_getOutPort((char*)m_pPacketBuffer + PACKET_HEADER_SIZE + 2, nameLen);
             if (pOutPort == NULL) {
               const RESULT ret = RESULT::OUTPORT_NOT_FOUND; 
               Transport_SendPacket(COMMAND::RECEIVE_DATA, ret, 0, NULL);
             }
             if(pOutPort->pPortBuffer->hasNext(pOutPort->pPortBuffer)) {
               char* name = pOutPort->pName;
-              unsigned char nameLen = strlen(name);
-              unsigned char dataLen = pOutPort->pPortBuffer->getNextDataSize(pOutPort->pPortBuffer);
+              //uint8_t nameLen = strlen(name);
+              uint8_t dataLen = pOutPort->pPortBuffer->getNextDataSize(pOutPort->pPortBuffer);
 
               m_pPacketBuffer[0] = nameLen;
               m_pPacketBuffer[1] = dataLen;
               memcpy(m_pPacketBuffer + 2, name, nameLen);
-              pOutPort->pPortBuffer->pop(pOutPort->pPortBuffer, m_pPacketBuffer + 2 + nameLen, dataLen);
-              Transport_SendPacket(COMMAND::RECEIVE_DATA, ret, 2 + nameLen + dataLen, m_pPacketBuffer);
+              pOutPort->pPortBuffer->pop(pOutPort->pPortBuffer, (uint8_t*)(m_pPacketBuffer + 2 + nameLen), dataLen);
+              Transport_SendPacket(COMMAND::RECEIVE_DATA, ret, 2 + nameLen + dataLen, (uint8_t*)m_pPacketBuffer);
               return;
             } else {
               const RESULT ret = RESULT::OUTPORT_BUFFER_EMPTY; 
               Transport_SendPacket(COMMAND::RECEIVE_DATA, ret, 0, NULL);
             }
             EC_resume();
-          }
+          //}
           
         }
         break;
@@ -320,6 +383,7 @@ void RTno_loop() {
         // }
       }
     }
+      
   }
 }
 
@@ -399,22 +463,6 @@ void RTno_loop_() {
 
 #endif 
 
-/**
- * add InPort data to Profile.
- */
-void addInPort(InPortBase& Port)
-{
-  RTnoProfile_addInPort(&Port);
-}
-
-/**
- * add OutPort data to Profile
- */
-void addOutPort(OutPortBase& Port)
-{
-  RTnoProfile_addOutPort(&Port);
-}
-
 
 /**
  * Private Function Definitions
@@ -437,7 +485,7 @@ PRIVATE void _SendProfile() {
     uint8_t nameLen = strlen(inPort->pName);
     m_pPacketBuffer[0] = inPort->typeCode;
     memcpy(&(m_pPacketBuffer[1]), inPort->pName, nameLen);
-    Transport_SendPacket(COMMAND::INPORT_PROFILE, result, 1+nameLen, m_pPacketBuffer);
+    Transport_SendPacket(COMMAND::INPORT_PROFILE, result, 1+nameLen, (uint8_t*)m_pPacketBuffer);
   }
 
   for(uint8_t i = 0;i < RTnoProfile_getNumOutPort();i++) {
@@ -445,7 +493,7 @@ PRIVATE void _SendProfile() {
     uint8_t nameLen = strlen(outPort->pName);
     m_pPacketBuffer[0] = outPort->typeCode;
     memcpy(&(m_pPacketBuffer[1]), outPort->pName, nameLen);
-    Transport_SendPacket(COMMAND::OUTPORT_PROFILE, result, 1+nameLen, m_pPacketBuffer);
+    Transport_SendPacket(COMMAND::OUTPORT_PROFILE, result, 1+nameLen, (uint8_t*)m_pPacketBuffer);
   }
 
   Transport_SendPacket(COMMAND::GET_PROFILE, result, 0, NULL);

@@ -8,7 +8,7 @@
 namespace ssr::rtno {
     RESULT EtherTcp_init(uint8_t* mac, uint8_t *ip, uint8_t *gateway, uint8_t *subnet, uint16_t port);
 
-    RESULT EtherTcp_putc(const uint8_t c);
+    RESULT EtherTcp_putc(const uint8_t* c);
     RESULT EtherTcp_available();
     RESULT EtherTcp_getc(uint8_t* c);
 }

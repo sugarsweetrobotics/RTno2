@@ -9,7 +9,7 @@
 namespace ssr::rtno {
     // Write single char to Serial Device
     // This function is initialized in the initialization sequence.
-    extern RESULT (*SerialDevice_putc)(const uint8_t c);
+    extern RESULT (*SerialDevice_putc)(const uint8_t* c);
 
     // Check Single char is avalable to read.
     // If available, returns RESULT::OK.
