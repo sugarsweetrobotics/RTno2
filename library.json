@@ -1,0 +1,22 @@
+{
+  "name": "RTno2",
+  "keywords": "RT-middleware Device communication library",
+  "description": "A library for RT-middleware available device.",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/sugarsweetrobotics/RTno2.git"
+  },
+  "authors":
+  [
+    {
+      "name": "Yuki Suga",
+      "email": "ysuga@ysuga.net",
+      "maintainer": true
+    }
+  ],
+  "version": "2.0.0",
+  "frameworks": ["arduino","m5","espidf"],
+  "platforms": "*",
+  "headers": "RTno2.h"
+}

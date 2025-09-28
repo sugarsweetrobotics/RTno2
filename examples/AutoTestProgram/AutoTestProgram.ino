@@ -1,47 +1,48 @@
 /**
-  * RTnoTemplate.ino
-  * RTno is RT-middleware and arduino.
-  *
-  * Using RTno, arduino device can communicate any RT-components 
-  *  through the RTno-proxy component which is launched in PC.
-  * Connect arduino with USB, and program with RTno library.
-  * You do not have to define any protocols to establish communication
-  *  between arduino and PC.
-  *
-  * Using RTno, you must not modify the function "setup" and "loop".
-  * Those functions are automatically defined in this file.
-  * You, developers, must define following functions:
-  *  int RTC::onInitialize(void);
-  *  int RTC::onActivated(void);
-  *  int RTC::onDeactivated(void);
-  *  int RTC::onExecute(void);
-  *  int RTC::onError(void);
-  *  int RTC::onReset(void);
-  * These functions are spontaneously called by the RTno-proxy
-  *  RT-component which is launched in the PC.
-  * @author Yuki Suga
-  * This code is written/distributed for public-domain.
-*/
+ * RTnoTemplate.ino
+ * RTno is RT-middleware and arduino.
+ *
+ * Using RTno, arduino device can communicate any RT-components
+ *  through the RTno-proxy component which is launched in PC.
+ * Connect arduino with USB, and program with RTno library.
+ * You do not have to define any protocols to establish communication
+ *  between arduino and PC.
+ *
+ * Using RTno, you must not modify the function "setup" and "loop".
+ * Those functions are automatically defined in this file.
+ * You, developers, must define following functions:
+ *  int RTC::onInitialize(void);
+ *  int RTC::onActivated(void);
+ *  int RTC::onDeactivated(void);
+ *  int RTC::onExecute(void);
+ *  int RTC::onError(void);
+ *  int RTC::onReset(void);
+ * These functions are spontaneously called by the RTno-proxy
+ *  RT-component which is launched in the PC.
+ * @author Yuki Suga
+ * This code is written/distributed for public-domain.
+ */
 
 /**
  * Include Timer1ExecutionContext.h header
  *  to use Timer1ExecutionContext
  * See Timer1EC example to know in more detail
  */
-//#include <Timer1ExecutionContext.h>
+// #include <Timer1ExecutionContext.h>
 
-/** 
+/**
  * Include UART.h header
  *  to use ConnectionTypeSerial1, 2, 3
  */
-#include <RTno.h>
+#include <RTno2.h>
 
 /**
  * This function is called at first.
  * conf._default.baudrate: baudrate of serial communication
  * exec_cxt.periodic.type: reserved but not used.
  */
-void rtcconf(config_str& conf, exec_cxt_str& exec_cxt) {
+void rtcconf(config_str &conf, exec_cxt_str &exec_cxt)
+{
   conf._default.connection_type = ConnectionTypeSerial1;
   // conf._default.connection_type = ConnectionTypeSerial2; // This configuration is avaiable in Arduino-Mega
   // conf._default.connection_type = ConnectionTypeSerial3; // This configuration is avaiable in Arduino-Mega
@@ -61,8 +62,7 @@ void rtcconf(config_str& conf, exec_cxt_str& exec_cxt) {
   // exec_cxt.periodic.rate = 1000; // [Hz] This option is indispensable when type is Timer*ExecutionContext.
 }
 
-
-/** 
+/**
  * Declaration Division:
  *
  * DataPort and Data Buffer should be placed here.
@@ -108,7 +108,6 @@ OutPort<TimedChar> char_outOut("char_out", char_out);
 TimedOctet octet_out;
 OutPort<TimedOctet> octet_outOut("octet_out", octet_out);
 
-
 TimedLong long_out;
 OutPort<TimedLong> long_outOut("long_out", long_out);
 TimedFloat float_out;
@@ -123,7 +122,6 @@ OutPort<TimedFloatSeq> float_seq_outOut("float_seq_out", float_seq_out);
 TimedDoubleSeq double_seq_out;
 OutPort<TimedDoubleSeq> double_seq_outOut("double_seq_out", double_seq_out);
 
-
 //////////////////////////////////////////
 // on_initialize
 //
@@ -132,7 +130,8 @@ OutPort<TimedDoubleSeq> double_seq_outOut("double_seq_out", double_seq_out);
 // In on_initialize, usually DataPorts are added.
 //
 //////////////////////////////////////////
-int onInitialize() {
+int onInitialize()
+{
   addInPort(bool_inIn);
   addOutPort(bool_outOut);
   addInPort(char_inIn);
@@ -146,7 +145,7 @@ int onInitialize() {
   addOutPort(float_outOut);
   addInPort(double_inIn);
   addOutPort(double_outOut);
-  
+
   addInPort(long_seq_inIn);
   addOutPort(long_seq_outOut);
   addInPort(float_seq_inIn);
@@ -154,7 +153,7 @@ int onInitialize() {
   addInPort(double_seq_inIn);
   addOutPort(double_seq_outOut);
 
-  return RTC_OK; 
+  return RTC_OK;
 }
 
 ////////////////////////////////////////////
@@ -162,10 +161,11 @@ int onInitialize() {
 // This function is called when the RTnoRTC
 // is activated. When the activation, the RTnoRTC
 // sends message to call this function remotely.
-// If this function is failed (return value 
+// If this function is failed (return value
 // is RTC_ERROR), RTno will enter ERROR condition.
 ////////////////////////////////////////////
-int onActivated() {
+int onActivated()
+{
   // Write here initialization code.
 
   bool_in.data = false;
@@ -194,8 +194,8 @@ int onActivated() {
   double_seq_in.data[0] = 1.0;
   double_seq_out.data.length(1);
   double_seq_out.data[0] = 1.0;
-  
-  return RTC_OK; 
+
+  return RTC_OK;
 }
 
 /////////////////////////////////////////////
@@ -237,81 +237,92 @@ int onDeactivated()
 }
 
 //////////////////////////////////////////////
-// This function is repeatedly called when the 
+// This function is repeatedly called when the
 // RTno is in the ACTIVE condition.
 // If this function is failed (return value is
-// RTC_ERROR), RTno immediately enter into the 
+// RTC_ERROR), RTno immediately enter into the
 // ERROR condition.r
 //////////////////////////////////////////////
-int onExecute() {
+int onExecute()
+{
 
-  if (bool_inIn.isNew()) {
+  if (bool_inIn.isNew())
+  {
     bool_inIn.read();
   }
   bool_out.data = bool_in.data;
   bool_outOut.write();
 
-  if (char_inIn.isNew()) {
+  if (char_inIn.isNew())
+  {
     char_inIn.read();
   }
   char_out.data = char_in.data;
   char_outOut.write();
 
-  if (octet_inIn.isNew()) {
+  if (octet_inIn.isNew())
+  {
     octet_inIn.read();
   }
   octet_out.data = octet_in.data;
   octet_outOut.write();
 
-
-  if (long_inIn.isNew()) {
+  if (long_inIn.isNew())
+  {
     long_inIn.read();
   }
   long_out.data = long_in.data;
   long_outOut.write();
 
-  if (float_inIn.isNew()) {
+  if (float_inIn.isNew())
+  {
     float_inIn.read();
   }
   float_out.data = float_in.data;
   float_outOut.write();
 
-  if (double_inIn.isNew()) {
+  if (double_inIn.isNew())
+  {
     double_inIn.read();
   }
   double_out.data = double_in.data;
   double_outOut.write();
 
-  if (long_seq_inIn.isNew()) {
+  if (long_seq_inIn.isNew())
+  {
     long_seq_inIn.read();
   }
   long_seq_out.data.length(long_seq_in.data.length());
-  for(int i = 0;i < long_seq_in.data.length();i++) {
+  for (int i = 0; i < long_seq_in.data.length(); i++)
+  {
     long_seq_out.data[i] = long_seq_in.data[i];
   }
   long_seq_outOut.write();
 
-  if (float_seq_inIn.isNew()) {
+  if (float_seq_inIn.isNew())
+  {
     float_seq_inIn.read();
   }
   float_seq_out.data.length(float_seq_in.data.length());
-  for(int i = 0;i < float_seq_in.data.length();i++) {
+  for (int i = 0; i < float_seq_in.data.length(); i++)
+  {
     float_seq_out.data[i] = float_seq_in.data[i];
   }
   float_seq_outOut.write();
 
-  if (double_seq_inIn.isNew()) {
+  if (double_seq_inIn.isNew())
+  {
     double_seq_inIn.read();
   }
   double_seq_out.data.length(double_seq_in.data.length());
-  for(int i = 0;i < double_seq_in.data.length();i++) {
+  for (int i = 0; i < double_seq_in.data.length(); i++)
+  {
     double_seq_out.data[i] = double_seq_in.data[i];
   }
   double_seq_outOut.write();
 
   return RTC_OK;
 }
-
 
 //////////////////////////////////////
 // on_error
@@ -326,10 +337,10 @@ int onError()
 }
 
 ////////////////////////////////////////
-// This function is called when 
+// This function is called when
 // the RTno is reset. If on_reset is
 // succeeded, the RTno will enter into
-// the INACTIVE condition. If failed 
+// the INACTIVE condition. If failed
 // (return value is RTC_ERROR), RTno
 // will stay in ERROR condition.ec
 ///////////////////////////////////////
@@ -341,14 +352,15 @@ int onReset()
 //////////////////////////////////////////
 // DO NOT MODIFY THESE FUNCTIONS
 //////////////////////////////////////////
-void setup() {
+void setup()
+{
   RTno_setup(onInitialize, onActivated, onDeactivated, onExecute, onError, onReset);
 }
 
 //////////////////////////////////////////
 // DO NOT MODIFY THESE FUNCTIONS
 //////////////////////////////////////////
-void loop() {
+void loop()
+{
   RTno_loop();
 }
-

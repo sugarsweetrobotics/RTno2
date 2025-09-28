@@ -8,7 +8,7 @@
 #define __THIS_IS_NOT_MAIN__
 #include <stdint.h>
 #include "Packet.h"
-#include "RTno.h"
+#include "RTno2.h"
 #include "Transport.h"
 #include "RTnoProfile.h"
 

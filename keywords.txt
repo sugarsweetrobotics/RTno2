@@ -1,0 +1,40 @@
+#######################################
+# Syntax Coloring Map For RTno2
+#######################################
+
+#######################################
+# Datatypes	(KEYWORD1)
+#######################################
+
+TimedBoolean	KEYWORD1
+TimedBooleanSeq	KEYWORD1
+TimedOctet	KEYWORD1
+TimedOctetSeq	KEYWORD1
+TimedChar	KEYWORD1
+TimedCharSeq	KEYWORD1
+TimedLong	KEYWORD1
+TimedLongSeq	KEYWORD1
+TimedDouble	KEYWORD1
+TimedDoubleSeq	KEYWORD1
+TimedFloat	KEYWORD1
+TimedFloatSeq	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+onInitialized	KEYWORD2
+onActivated	KEYWORD2
+onDeactivated	KEYWORD2
+onExecute	KEYWORD2
+onReset	KEYWORD2
+onError	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+ConnectionTypeSerial1	LITERAL1
+ConnectionTypeEtherTcp  LITERAL1
+ProxySynchronousExecutionContext    LITERAL1
+TimerOneExecutionContext    LITERAL1
