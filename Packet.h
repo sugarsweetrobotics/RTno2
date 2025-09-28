@@ -39,57 +39,7 @@ enum {
 
 
 // Protocol
-
-enum class COMMAND : char {
-  INITIALIZE = 'I',
-  ACTIVATE = 'A',
-  DEACTIVATE = 'D',
-  GET_STATE = 'X',
-
-  GET_CONTEXT_TYPE = 'B',
-  EXECUTE = 'E',
-  RESET = 'R',
-
-  ONERROR = 'C',
-  GET_PROFILE = 'Z',
-  INPORT_PROFILE = 'P',
-  OUTPORT_PROFILE = 'Q',
-
-  SEND_DATA = 'S',
-  RECEIVE_DATA = 'G',
-  
-  PACKET_ERROR = 'F',
-  PACKET_ERROR_CHECKSUM = 'H',
-  PACKET_ERROR_TIMEOUT = 'K',
-  // RECEIVE_DATA = 'V',
-
-  // INPORT_ISNEW = 'N',
-  // INPORT_READ  = 'J',
-};
-
-// #define INITIALIZE 'I'
-// #define ACTIVATE 'A'
-// #define DEACTIVATE 'D'
-// #define EXECUTE 'E'
-// #define ONERROR 'C'
-// #define RESET 'R'
-// #define GET_STATUS 'X'
-// #define GET_DATA 'G'
-// #define SEND_DATA 'S'
-// #define GET_PROFILE 'Z'
-// #define GET_CONTEXT 'B'
-// #define PACKET_ERROR 'F'
-// #define PACKET_ERROR_CHECKSUM 'H'
-// #define PACKET_ERROR_TIMEOUT 'K'
-// #define RECEIVE_DATA 'V'
-
-// #define ADD_INPORT 'P'
-// #define ADD_OUTPORT 'Q'
-
-// #define INPORT_ISNEW 'N'
-// #define INPORT_READ  'J'
-
-
+#include "Command.h"
 
 #define RTNO_OK '@'
 #define RTNO_ERROR 'x'
