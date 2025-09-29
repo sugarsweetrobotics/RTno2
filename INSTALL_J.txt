@@ -1,6 +1,6 @@
 インストール方法
 
-RTnoは，RTnoというarduino開発環境用のライブラリと，RTnoProxyというRTnoを使ったarduinoと，RTコンポーネントの通信を可能にするファイルの組合せで動いています．
+RTno2は，RTnoというarduino開発環境用のライブラリと，RTno2ProxyというRTnoを使ったarduinoと，RTコンポーネントの通信を可能にするファイルの組合せで動いています．
 
 
 １．arduinoをインストールする

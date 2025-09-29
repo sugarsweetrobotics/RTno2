@@ -43,7 +43,7 @@
  */
 void rtcconf(config_str &conf, exec_cxt_str &exec_cxt)
 {
-  conf._default.connection_type = ConnectionTypeSerial1;
+  conf._default.connection_type = ConnectionType::SERIAL1;
   // conf._default.connection_type = ConnectionTypeSerial2; // This configuration is avaiable in Arduino-Mega
   // conf._default.connection_type = ConnectionTypeSerial3; // This configuration is avaiable in Arduino-Mega
   // conf._default.connection_type = ConnectionTypeEtherTcp; // This configuration is avaiable with Ethernet Shield.
@@ -93,6 +93,13 @@ InPort<TimedFloat> float_inIn("float_in", float_in);
 TimedDouble double_in;
 InPort<TimedDouble> double_inIn("double_in", double_in);
 
+TimedBooleanSeq bool_seq_in;
+InPort<TimedBooleanSeq> bool_seq_inIn("bool_seq_in", bool_seq_in);
+TimedCharSeq char_seq_in;
+InPort<TimedCharSeq> char_seq_inIn("char_seq_in", char_seq_in);
+TimedOctetSeq octet_seq_in;
+InPort<TimedOctetSeq> octet_seq_inIn("octet_seq_in", octet_seq_in);
+
 TimedLongSeq long_seq_in;
 InPort<TimedLongSeq> long_seq_inIn("long_seq_in", long_seq_in);
 TimedFloatSeq float_seq_in;
@@ -114,6 +121,13 @@ TimedFloat float_out;
 OutPort<TimedFloat> float_outOut("float_out", float_out);
 TimedDouble double_out;
 OutPort<TimedDouble> double_outOut("double_out", double_out);
+
+TimedBooleanSeq bool_seq_out;
+OutPort<TimedBooleanSeq> bool_seq_outOut("bool_seq_out", bool_seq_out);
+TimedCharSeq char_seq_out;
+OutPort<TimedCharSeq> char_seq_outOut("char_seq_out", char_seq_out);
+TimedOctetSeq octet_seq_out;
+OutPort<TimedOctetSeq> octet_seq_outOut("octet_seq_out", octet_seq_out);
 
 TimedLongSeq long_seq_out;
 OutPort<TimedLongSeq> long_seq_outOut("long_seq_out", long_seq_out);
@@ -146,6 +160,13 @@ int onInitialize()
   addInPort(double_inIn);
   addOutPort(double_outOut);
 
+  addInPort(bool_seq_inIn);
+  addOutPort(bool_seq_outOut);
+  addInPort(char_seq_inIn);
+  addOutPort(char_seq_outOut);
+  addInPort(octet_seq_inIn);
+  addOutPort(octet_seq_outOut);
+
   addInPort(long_seq_inIn);
   addOutPort(long_seq_outOut);
   addInPort(float_seq_inIn);
@@ -174,6 +195,19 @@ int onActivated()
   char_out.data = 'a';
   octet_in.data = 1;
   octet_out.data = 1;
+
+  bool_seq_in.data.length(1);
+  bool_seq_in.data[0] = false;
+  bool_seq_out.data.length(1);
+  bool_seq_out.data[0] = false;
+  char_seq_in.data.length(1);
+  char_seq_in.data[0] = 'a';
+  char_seq_out.data.length(1);
+  char_seq_out.data[0] = 'a';
+  octet_seq_in.data.length(1);
+  octet_seq_in.data[0] = 1;
+  octet_seq_out.data.length(1);
+  octet_seq_out.data[0] = 1;
 
   long_in.data = 1;
   long_out.data = 1;
@@ -213,6 +247,19 @@ int onDeactivated()
   char_out.data = 'a';
   octet_in.data = 1;
   octet_out.data = 1;
+
+  bool_seq_in.data.length(1);
+  bool_seq_in.data[0] = false;
+  bool_seq_out.data.length(1);
+  bool_seq_out.data[0] = false;
+  char_seq_in.data.length(1);
+  char_seq_in.data[0] = 'a';
+  char_seq_out.data.length(1);
+  char_seq_out.data[0] = 'a';
+  octet_seq_in.data.length(1);
+  octet_seq_in.data[0] = 0;
+  octet_seq_out.data.length(1);
+  octet_seq_out.data[0] = 0;
 
   long_in.data = 1;
   long_out.data = 1;
@@ -266,6 +313,39 @@ int onExecute()
   }
   octet_out.data = octet_in.data;
   octet_outOut.write();
+
+  if (bool_seq_inIn.isNew())
+  {
+    bool_seq_inIn.read();
+  }
+  bool_seq_out.data.length(bool_seq_in.data.length());
+  for (int i = 0; i < bool_seq_in.data.length(); i++)
+  {
+    bool_seq_out.data[i] = bool_seq_in.data[i];
+  }
+  bool_seq_outOut.write();
+
+  if (char_seq_inIn.isNew())
+  {
+    char_seq_inIn.read();
+  }
+  char_seq_out.data.length(char_seq_in.data.length());
+  for (int i = 0; i < char_seq_in.data.length(); i++)
+  {
+    char_seq_out.data[i] = char_seq_in.data[i];
+  }
+  char_seq_outOut.write();
+
+  if (octet_seq_inIn.isNew())
+  {
+    octet_seq_inIn.read();
+  }
+  octet_seq_out.data.length(octet_seq_in.data.length());
+  for (int i = 0; i < octet_seq_in.data.length(); i++)
+  {
+    octet_seq_out.data[i] = octet_seq_in.data[i];
+  }
+  octet_seq_outOut.write();
 
   if (long_inIn.isNew())
   {

@@ -1,7 +1,8 @@
 #ifndef RESULT_HEADER_FILE_INCLUDED
 #define RESULT_HEADER_FILE_INCLUDED
 
-enum class RESULT : char {
+enum class RESULT : char
+{
   OK = '@',
   ERROR = 'x',
   NONE = '!',
@@ -18,7 +19,7 @@ enum class RESULT : char {
   PACKET_HEADER_TIMEOUT = 'T',
   PACKET_BODY_TIMEOUT = 'U',
   PACKET_CHECKSUM_TIMEOUT = 'Q',
-
+  UNKNOWN_COMMAND = 'K',
 };
 
-#endif 
+#endif
