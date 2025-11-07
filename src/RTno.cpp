@@ -100,7 +100,7 @@ int (*RTno_onReset)();
 void RTno_setup(int (*on_initialize)(), int (*on_activated)(), int (*on_deactivated)(), int (*on_execute)(), int (*on_error)(), int (*on_reset)())
 {
 
-  RTnoProfile_init();
+  RTnoProfile_init(getArchitecture());
   RTno_onInitialize = on_initialize;
   RTno_onActivated = on_activated;
   RTno_onDeactivated = on_deactivated;
@@ -535,6 +535,11 @@ PRIVATE void _SendProfile()
 {
   RESULT result = RESULT::OK;
   int8_t ret = RTNO_OK;
+
+  auto platform = RTnoProfile_getPlatformInfo();
+  m_pPacketBuffer[0] = static_cast<uint8_t>(platform.arch);
+  Transport_SendPacket(COMMAND::PLATFORM_PROFILE, result, 1, (uint8_t *)m_pPacketBuffer);
+
   for (uint8_t i = 0; i < RTnoProfile_getNumInPort(); i++)
   {
     PortBase *inPort = RTnoProfile_getInPortByIndex(i);

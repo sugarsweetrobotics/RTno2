@@ -1,9 +1,13 @@
 #pragma once
 
+#if defined(__AVR__)
+#elif defined(__arm__)
 #include <sstream>
-#include "Print.h"
-
 extern std::stringstream ss;
+#else
+#endif
+
+#include "Print.h"
 
 class Logger : public Print
 {
@@ -17,12 +21,14 @@ public:
   const uint32_t logsize();
   void clear();
 
+#if defined(__arm__)
   template <typename T>
   Logger &operator<<(const T value)
   {
     ss << value;
     return *this;
   }
+#endif
 };
 
 const char *get_log_data();

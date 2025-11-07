@@ -1,8 +1,7 @@
 #pragma once
 
-
-
-enum class COMMAND : char {
+enum class COMMAND : char
+{
   INITIALIZE = 'I',
   ACTIVATE = 'A',
   DEACTIVATE = 'D',
@@ -21,8 +20,10 @@ enum class COMMAND : char {
   RECEIVE_DATA = 'G',
 
   RECEIVE_LOG = 'L',
-  
+
   PACKET_ERROR = 'F',
   PACKET_ERROR_CHECKSUM = 'H',
   PACKET_ERROR_TIMEOUT = 'K',
+
+  PLATFORM_PROFILE = 'T',
 };
