@@ -1,7 +1,6 @@
 #ifndef RTC_CONF_HEADER_INCLUDED
 #define RTC_CONF_HEADER_INCLUDED
 
-
 #define RTC_OK 0
 #define RTC_ERROR -1
 #define RTC_PRECONDITION_NOT_MET -2
@@ -16,46 +15,66 @@
 
 #endif
 
+// #ifdef USE_UART_CONNECTION
+// #define ConnectionTypeSerialUSB 0x11
+// #define ConnectionTypeSerial1 0x01
+// #define ConnectionTypeSerial2 0x02
+// #define ConnectionTypeSerial3 0x03
+// #endif
 
+enum class ConnectionType : uint8_t
+{
+  SERIAL1 = 0x01,
+  SERIAL2 = 0x02,
+  SERIAL3 = 0x03,
+  ETHER_TCP = 0x04,
+  SERIAL_USB = 0x11,
+};
 
-struct default_str {
-  //#ifdef USE_ETHERNET_CONNECTION
+struct default_t
+{
+  // #ifdef USE_ETHERNET_CONNECTION
   uint64_t mac_address;
   uint16_t port;
-  char* default_gateway;
-  char* ip_address;
-  char* subnet_mask;
-  //#endif
+  char *default_gateway;
+  char *ip_address;
+  char *subnet_mask;
+  // #endif
 
-  //#ifdef USE_UART_CONNECTION
+  // #ifdef USE_UART_CONNECTION
   uint16_t baudrate;
-  //#endif
-  
-  uint8_t connection_type;
+  // #endif
+
+  ConnectionType connection_type;
 };
 
-
-struct ether_str {
+struct ether_str
+{
 };
 
-struct config_str {
-  struct default_str _default;
+struct config_t
+{
+  struct default_t _default;
 };
 
-struct exec_cxt_str {
-  struct periodic_str {
+enum class ECType : uint8_t
+{
+  MAINLOOP = 1,
+  PROXY_SYNCHRONOUS = 2,
+  FSPTIMER = 3,
+  TIMERONE = 4,
+
+  UNKNOWN = 255,
+};
+
+struct exec_cxt_t
+{
+  struct periodic_t
+  {
     float rate;
-    uint8_t type;
-  }periodic;
+    ECType type;
+  } periodic;
 };
-
-#ifdef USE_UART_CONNECTION
-#define ConnectionTypeSerialUSB 0x11
-#define ConnectionTypeSerial1 0x01
-#define ConnectionTypeSerial2 0x02
-#define ConnectionTypeSerial3 0x03
-#endif
-
 #ifdef USE_ETHERNET_CONNECTION
 #define ConnectionTypeEtherTcp 0x04
 #endif
@@ -68,7 +87,7 @@ struct exec_cxt_str {
 
 #define Timer2ExecutionContext 0x23
 
-#define FSPTimerExecutionContext 0x24
+// #define FSPTimerExecutionContext 0x24
 
 #define TimerOneExecutionContext 0x25
 

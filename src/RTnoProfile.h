@@ -2,7 +2,7 @@
 #define RTNO_PROFILE_HEADER_INCLUDED
 
 #include <stdint.h>
-#include "Architecture.h"
+#include "hal/Architecture.h"
 // #include "RTno.h"
 
 #include "InPort.h"

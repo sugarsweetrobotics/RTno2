@@ -44,13 +44,13 @@ PRIVATE void _PacketHandlerOnInactive();
  */
 PRIVATE void _PacketHandlerOnActive();
 
-void EC_setup(exec_cxt_str &exec_cxt);
+void EC_setup(exec_cxt_t &exec_cxt);
 
 ReturnValue_t EC_fault();
 
-void Connection_setup(config_str &conf);
+void Connection_setup(config_t &conf);
 
-void Connection_setup(config_str &conf)
+void Connection_setup(config_t &conf)
 {
   switch (conf._default.connection_type)
   {
@@ -64,16 +64,16 @@ void Connection_setup(config_str &conf)
     break;
 #endif // USE_ETHERNET_CONNECTION
 #ifdef USE_UART_CONNECTION
-  case ConnectionTypeSerialUSB:
+  case ConnectionType::SERIAL_USB:
     UART_init(0, conf._default.baudrate);
     break;
-  case ConnectionTypeSerial1:
+  case ConnectionType::SERIAL1:
     UART_init(1, conf._default.baudrate);
     break;
-  case ConnectionTypeSerial2:
+  case ConnectionType::SERIAL2:
     UART_init(2, conf._default.baudrate);
     break;
-  case ConnectionTypeSerial3:
+  case ConnectionType::SERIAL3:
     UART_init(3, conf._default.baudrate);
     break;
 #endif // USE_UART_CONNECTION
@@ -84,7 +84,7 @@ void Connection_setup(config_str &conf)
 
 // DataFlowComponentBase* __rtc;
 
-void EC_setup(exec_cxt_str &exec_cxt);
+void EC_setup(exec_cxt_t &exec_cxt);
 
 int (*RTno_onInitialize)();
 int (*RTno_onActivated)();
@@ -108,8 +108,8 @@ void RTno_setup(int (*on_initialize)(), int (*on_activated)(), int (*on_deactiva
   RTno_onReset = on_reset;
   RTno_onError = on_error;
 
-  exec_cxt_str *exec_cxt = (exec_cxt_str *)malloc(sizeof(exec_cxt_str));
-  config_str *conf = (config_str *)malloc(sizeof(config_str));
+  exec_cxt_t *exec_cxt = (exec_cxt_t *)malloc(sizeof(exec_cxt_t));
+  config_t *conf = (config_t *)malloc(sizeof(config_t));
   rtcconf(*conf, *exec_cxt);
   if (RTno_onInitialize() == RTC_OK)
   {
@@ -223,7 +223,7 @@ ReturnValue_t EC_execute()
   }
 }
 
-void EC_setup(exec_cxt_str &exec_cxt)
+void EC_setup(exec_cxt_t &exec_cxt)
 {
   switch (exec_cxt.periodic.type)
   {
@@ -234,12 +234,12 @@ void EC_setup(exec_cxt_str &exec_cxt)
 // #endif // USE_TIMER1_EC
 //   case ProxySynchronousExecutionContext:
 #if defined(__AVR__)
-  case FSPTimerExecutionContext:
+  case ECType::TIMERONE:
     TimerOneEC_init(exec_cxt.periodic.rate);
     break;
 #endif
 #if defined(__arm__)
-  case FSPTimerExecutionContext:
+  case ECType::FSPTIMER:
     FSPTimerEC_init(exec_cxt.periodic.rate);
     break;
 #endif

@@ -22,7 +22,7 @@
 #include "rtcconf.h"
 
 #ifdef USE_UART_CONNECTION
-#include "UART.h"
+#include "hal/UART.h"
 #endif
 
 #ifdef USE_ETHERNET_CONNECTION
@@ -50,7 +50,7 @@ int RTnoProfile_addOutPort(PortBase *port);
 // global functions
 // RTno APIs
 // extern "C" {
-void rtcconf(config_str &conf, exec_cxt_str &exec_cxt);
+void rtcconf(config_t &conf, exec_cxt_t &exec_cxt);
 //};
 
 // class DataFlowComponentBase {
