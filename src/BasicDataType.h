@@ -12,77 +12,88 @@
 #include "Sequence.h"
 
 #pragma pack(1)
-struct TimedBoolean  {
+struct TimedBoolean
+{
   static const char typeCode = 'b';
   char data;
 };
 
-struct TimedChar {
+struct TimedChar
+{
   static const char typeCode = 'c';
   char data;
 };
 
-struct TimedOctet {
+struct TimedOctet
+{
   static const char typeCode = 'o';
   int8_t data;
 };
 
-struct TimedShort {
+struct TimedShort
+{
   static const char typeCode = 's';
   int16_t data;
-
 };
 
-struct TimedLong {
+struct TimedLong
+{
   static const char typeCode = 'l';
   int32_t data;
 };
 
-struct TimedDouble {
+struct TimedDouble
+{
   static const char typeCode = 'd';
   double data;
 };
 
-struct TimedFloat {
+struct TimedFloat
+{
   static const char typeCode = 'f';
   float data;
 };
 
-
-struct TimedOctetSeq {
+struct TimedOctetSeq
+{
   static const char typeCode = 'O';
   Sequence<int8_t> data;
 };
 
-struct TimedCharSeq {
+struct TimedCharSeq
+{
   static const char typeCode = 'C';
   Sequence<char> data;
 };
 
-struct TimedBooleanSeq {
+struct TimedBooleanSeq
+{
   static const char typeCode = 'B';
   Sequence<char> data;
 };
 
-struct TimedShortSeq {
+struct TimedShortSeq
+{
   static const char typeCode = 'S';
   Sequence<int16_t> data;
 };
 
-struct TimedLongSeq {
+struct TimedLongSeq
+{
   static const char typeCode = 'L';
   Sequence<int32_t> data;
 };
 
-struct TimedFloatSeq {
+struct TimedFloatSeq
+{
   static const char typeCode = 'F';
   Sequence<float> data;
 };
 
-struct TimedDoubleSeq {
+struct TimedDoubleSeq
+{
   static const char typeCode = 'D';
   Sequence<double> data;
 };
-
 
 #endif

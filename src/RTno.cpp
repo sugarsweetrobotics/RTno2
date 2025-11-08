@@ -108,15 +108,13 @@ void RTno_setup(int (*on_initialize)(), int (*on_activated)(), int (*on_deactiva
   RTno_onReset = on_reset;
   RTno_onError = on_error;
 
-  exec_cxt_t *exec_cxt = (exec_cxt_t *)malloc(sizeof(exec_cxt_t));
-  config_t *conf = (config_t *)malloc(sizeof(config_t));
-  rtcconf(*conf, *exec_cxt);
+  exec_cxt_t exec_cxt;
+  config_t conf;
+  rtcconf(conf, exec_cxt);
   if (RTno_onInitialize() == RTC_OK)
   {
-    EC_setup(*exec_cxt);
-    Connection_setup(*conf);
-    free(exec_cxt);
-    free(conf);
+    EC_setup(exec_cxt);
+    Connection_setup(conf);
     Transport_init();
     EC_start();
   }
