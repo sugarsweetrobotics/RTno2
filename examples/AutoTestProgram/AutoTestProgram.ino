@@ -464,19 +464,3 @@ int onReset()
 {
   return RTC_OK;
 }
-
-//////////////////////////////////////////
-// DO NOT MODIFY THESE FUNCTIONS
-//////////////////////////////////////////
-void setup()
-{
-  RTno_setup(onInitialize, onActivated, onDeactivated, onExecute, onError, onReset);
-}
-
-//////////////////////////////////////////
-// DO NOT MODIFY THESE FUNCTIONS
-//////////////////////////////////////////
-void loop()
-{
-  RTno_loop();
-}

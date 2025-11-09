@@ -49,77 +49,7 @@ int RTnoProfile_addOutPort(PortBase *port);
 
 // global functions
 // RTno APIs
-// extern "C" {
 void rtcconf(config_t &conf, exec_cxt_t &exec_cxt);
-//};
-
-// class DataFlowComponentBase {
-// public:
-
-// public:
-//   DataFlowComponentBase() {}
-//   virtual ~DataFlowComponentBase() {}
-
-// public:
-//   virtual int onInitialize() {
-//     return RTC_OK;
-//   }
-
-//   /**
-//    * onActivated()
-//    * This function is called when RTno is activated only if RTno is RTC_INACTIVE condition.
-//    * RTno is usually activated by RT System Editor or other tools for OpenRTM-aist.
-//    */
-//   virtual int onActivated() {
-//     return RTC_OK;
-//   }
-
-//   /**
-//    * onExecute()
-//    * This function is periodically called when the RTno-proxy is RTC_ACTIVE condition.
-//    */
-//   virtual int onExecute() {
-//     return RTC_OK;
-//   }
-
-//   /**
-//    * onDeactivated()
-//    * This function is called when RTno is deactivated only if RTno is RTC_ACTIVE condition.
-//    * RTno is usually deactivated by RT System Editor or other tools for OpenRTM-aist.
-//    */
-//   virtual int onDeactivated() {
-//     return RTC_OK;
-//   }
-
-//   /**
-//    * onError
-//    * This function is called when RTno is error only if RTno is in RTC_ERROR condition.
-//    * [DANGEROUS] This function is periodically called in very short interval.
-//    */
-//   virtual int onError() {
-//     return RTC_OK;
-//   }
-
-//   /**
-//    * onReset
-//    * This function is called when RTno is reset only if RTno is in RTC_ERROR condition.
-//    * RTno is usually reset by RT System Editor or other tools for OpenRTM-aist.
-//    */
-//   virtual int onReset() {
-//     return RTC_OK;
-//   }
-
-// protected:
-
-//   void addInPort(InPortBase& inPort) {
-//     RTnoProfile_addInPort(&inPort);
-//   }
-
-//   void addOutPort(OutPortBase& outPort) {
-//     RTnoProfile_addOutPort(&outPort);
-//   }
-
-// };
 
 inline void addInPort(InPortBase &inPort)
 {
@@ -132,8 +62,34 @@ inline void addOutPort(OutPortBase &outPort)
 }
 
 void RTno_setup(int (*on_initialize)(), int (*on_activated)(), int (*on_deactivated)(), int (*on_execute)(), int (*on_error)(), int (*on_reset)());
-// void RTno_setup(DataFlowComponentBase* rtc);
 void RTno_loop();
+
+#if !defined(RTNO_NOT_MAIN)
+
+int onInitialize();
+int onActivated();
+int onDeactivated();
+int onExecute();
+int onError();
+int onReset();
+
+//////////////////////////////////////////
+// DO NOT MODIFY THESE FUNCTIONS
+//////////////////////////////////////////
+void setup()
+{
+  RTno_setup(onInitialize, onActivated, onDeactivated, onExecute, onError, onReset);
+}
+
+//////////////////////////////////////////
+// DO NOT MODIFY THESE FUNCTIONS
+//////////////////////////////////////////
+void loop()
+{
+  RTno_loop();
+}
+
+#endif
 
 extern Logger logger;
 
@@ -142,5 +98,3 @@ extern Logger logger;
 
 #define RTNO_LOGGER logger
 #endif
-
-// #endif

@@ -4,7 +4,7 @@
  * @copyright Yuki Suga (ysuga.net) Nov, 10th, 2010.
  * @license LGPLv3
  *****************************************/
-#define RTNO_SUBMODULE_DEFINE
+#define RTNO_NOT_MAIN
 #define __THIS_IS_NOT_MAIN__
 #include <stdint.h>
 #include "rtno/Packet.h"
