@@ -15,11 +15,11 @@
 #define USE_FSPTIMER_EC
 
 #include "Arduino.h"
-#include "BasicDataType.h"
-#include "InPort.h"
-#include "OutPort.h"
-#include "Logger.h"
-#include "rtcconf.h"
+#include "RTC/BasicDataType.h"
+#include "RTC/InPort.h"
+#include "RTC/OutPort.h"
+#include "RTC/rtcconf.h"
+#include "rtno/Logger.h"
 
 #ifdef USE_UART_CONNECTION
 #include "hal/UART.h"
@@ -31,14 +31,14 @@
 #endif
 
 #ifdef USE_TIMER1_EC
-#include "Timer1ExecutionContext.h"
+#include "ec/Timer1ExecutionContext.h"
 #endif
 
-#include "TimerOneExecutionContext.h"
+#include "ec/TimerOneExecutionContext.h"
 
-#include "FSPTimerExecutionContext.h"
+#include "ec/FSPTimerExecutionContext.h"
 
-#include "ProxySyncEC.h"
+#include "ec/ProxySyncEC.h"
 
 // global variables for rtcconf
 // extern volatile exec_cxt_str exec_cxt;

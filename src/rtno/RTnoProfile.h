@@ -5,8 +5,8 @@
 #include "hal/Architecture.h"
 // #include "RTno.h"
 
-#include "InPort.h"
-#include "OutPort.h"
+#include "RTC/InPort.h"
+#include "RTC/OutPort.h"
 
 struct PlatformInfo
 {

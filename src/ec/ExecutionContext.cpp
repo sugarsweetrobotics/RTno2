@@ -2,10 +2,10 @@
 
 #include <stdint.h>
 // #include "RTno.h"
-#include "rtcconf.h"
-#include "Packet.h"
+#include "RTC/rtcconf.h"
+#include "rtno/Packet.h"
 
-#include "ExecutionContext.h"
+#include "ec/ExecutionContext.h"
 
 class DataFlowComponentBase;
 
@@ -31,7 +31,7 @@ static LifeCycleState m_Condition;
 //   if(m_Condition != RTC_STATE_INACTIVE) {
 //     return RTC_PRECONDITION_NOT_MET;
 //   }
-  
+
 //   if(__rtc->onActivated() == RTC_OK) {
 //     m_Condition = RTC_STATE_ACTIVE;
 //     return RTC_OK;
@@ -41,12 +41,11 @@ static LifeCycleState m_Condition;
 //   return RTC_ERROR;
 // }
 
-
 // ReturnValue_t EC_deactivate_component() {
 //   if(m_Condition != RTC_STATE_ACTIVE) {
 //     return RTC_PRECONDITION_NOT_MET;
 //   }
-  
+
 //   if(__rtc->onDeactivated() == RTC_OK) {
 //     m_Condition = RTC_STATE_INACTIVE;
 //     return RTC_OK;
@@ -60,7 +59,7 @@ static LifeCycleState m_Condition;
 //   if(m_Condition != RTC_STATE_ACTIVE) {
 //     return RTC_PRECONDITION_NOT_MET;
 //   }
-  
+
 //   if(__rtc->onExecute() == RTC_OK) {
 //     return RTC_OK;
 //   } else {
@@ -73,11 +72,10 @@ static LifeCycleState m_Condition;
 //   if(m_Condition != RTC_STATE_ERROR) {
 //     return RTC_PRECONDITION_NOT_MET;
 //   }
-  
+
 //   __rtc->onError();
 //   return RTC_OK;
 // }
-
 
 #ifdef __cplusplus
 // extern "C" {

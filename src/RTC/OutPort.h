@@ -12,7 +12,7 @@
 #include "PortBase.h"
 #include "PortBuffer.h"
 #include "NullBuffer.h"
-#include "TypeCode.h"
+#include "RTC/TypeCode.h"
 #include <string.h>
 #include <stdlib.h>
 

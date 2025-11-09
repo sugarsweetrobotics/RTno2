@@ -7,10 +7,10 @@
 #define RTNO_SUBMODULE_DEFINE
 #define __THIS_IS_NOT_MAIN__
 #include <stdint.h>
-#include "Packet.h"
+#include "rtno/Packet.h"
 #include "RTno2.h"
-#include "Transport.h"
-#include "RTnoProfile.h"
+#include "rtno/Transport.h"
+#include "rtno/RTnoProfile.h"
 
 #include "Arduino.h"
 
@@ -422,82 +422,6 @@ void RTno_loop()
     }
   }
 }
-
-/**
- * Arduino Loop routine.
- * This function is repeadedly called when arduino is turned on.
- */
-#if 0
-void RTno_loop_() {
-  int8_t ret;
-  uint32_t timeout = 20*1000;
-  ret = Transport_ReceivePacket((uint8_t*)m_pPacketBuffer, timeout);
-  if(ret < 0) { // Timeout Error or Checksum Error
-    if(ret == -CHECKSUM_ERROR) {
-		  Transport_SendPacket(PACKET_ERROR_CHECKSUM, 1, (int8_t*)&ret);
-    } else if(ret == -TIMEOUT) {
-      Transport_SendPacket(PACKET_ERROR_TIMEOUT, 1, (int8_t*)&ret);
-    }else {
-    	Transport_SendPacket(PACKET_ERROR, 1, (int8_t*)&ret);
-    }
-  } else if (ret == 0) {
-
-  } else if (ret > 0) { // Packet is successfully received
-    if (m_pPacketBuffer[INTERFACE] == GET_PROFILE) {
-      _SendProfile();
-    } else if (m_pPacketBuffer[INTERFACE] == GET_STATUS) {
-      int8_t state = EC_get_component_state();
-      Transport_SendPacket(GET_STATUS, 1, &state);
-    } else if (m_pPacketBuffer[INTERFACE] == GET_CONTEXT) {
-      int8_t type = EC_get_type();
-      Transport_SendPacket(GET_CONTEXT, 1, &type);
-    } else if (m_pPacketBuffer[INTERFACE] == ACTIVATE) {
-      
-
-    } else {
-      switch(EC_get_component_state()) {
-      case RTC_STATE_ERROR:
-        _PacketHandlerOnError();
-        break;
-      case RTC_STATE_INACTIVE:
-        _PacketHandlerOnInactive();
-        break;
-      case RTC_STATE_ACTIVE:
-        _PacketHandlerOnActive();
-        break;
-      case RTC_STATE_NONE:
-        ret = RTNO_NONE;
-        Transport_SendPacket(m_pPacketBuffer[INTERFACE], 1, (int8_t*)&ret);
-    break;
-      default: // if m_Condition is unknown...
-    
-    break;
-      }
-    }
-  }
-
-  
-  // int numOutPort = RTnoProfile_getNumOutPort();
-  // for(int i = 0;i < numOutPort;i++) {
-  //   EC_suspend();
-  //   PortBase* pOutPort = RTnoProfile_getOutPortByIndex(i);
-  //   if(pOutPort->pPortBuffer->hasNext(pOutPort->pPortBuffer)) {
-  //     char* name = pOutPort->pName;
-  //     unsigned char nameLen = strlen(name);
-  //     unsigned char dataLen = pOutPort->pPortBuffer->getNextDataSize(pOutPort->pPortBuffer);
-
-  //     m_pPacketBuffer[0] = nameLen;
-  //     m_pPacketBuffer[1] = dataLen;
-  //     memcpy(m_pPacketBuffer + 2, name, nameLen);
-  //     pOutPort->pPortBuffer->pop(pOutPort->pPortBuffer, m_pPacketBuffer + 2 + nameLen, dataLen);
-  //     Transport_SendPacket(RECEIVE_DATA, 2 + nameLen + dataLen, m_pPacketBuffer);
-  //   }
-  //   EC_resume();
-  // }
-  
-}
-
-#endif
 
 /**
  * Private Function Definitions

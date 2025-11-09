@@ -9,7 +9,7 @@
  *****************************************/
 
 #include <stdint.h>
-#include "TypeCode.h"
+#include "RTC/TypeCode.h"
 #include "PortBase.h"
 #include "NullBuffer.h"
 #include <string.h>
