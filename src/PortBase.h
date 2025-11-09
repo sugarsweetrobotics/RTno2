@@ -15,22 +15,19 @@
 #define PACKET_BUFFER_SIZE 256
 #define MAX_PORT 16
 
-typedef struct _PortBase
+class PortBase
 {
+public:
   unsigned char portBuffer;
   void *pData;
-  char *pName;
+  const char *pName;
   char typeCode;
   PortBuffer *pPortBuffer;
-} PortBase;
 
-PortBase *PortBase_create();
-void PortBase_init(PortBase *pPortBase, const char *name, char typeCode, PortBuffer *dataBuffer);
-void PortBase_destroy(PortBase *pPortBase);
-
-uint8_t PortBase_isSequence(PortBase *pPortBase);
-uint8_t PortBase_getLength(PortBase *pPortBase);
-void PortBase_setLength(PortBase *pPortBase, uint8_t length);
-PortBuffer *PortBase_getBuffer(PortBase *pPortBase);
+public:
+  PortBase(const char *name, char typeCode, PortBuffer *dataBuffer) : pName(name), typeCode(typeCode), pPortBuffer(dataBuffer)
+  {
+  }
+};
 
 #endif

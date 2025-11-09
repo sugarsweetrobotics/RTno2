@@ -120,24 +120,6 @@ void RTno_setup(int (*on_initialize)(), int (*on_activated)(), int (*on_deactiva
   }
   return;
 }
-// void RTno_setup(int(*on_initialize)()) {
-//  void RTno_setup(DataFlowComponentBase* rtc) {
-//    __rtc = rtc;
-//    RTnoProfile_init();
-//    // This function must be called first.
-//    exec_cxt_str* exec_cxt = (exec_cxt_str*)malloc(sizeof(exec_cxt_str));
-//    config_str* conf = (config_str*)malloc(sizeof(config_str));
-//    rtcconf(*conf, *exec_cxt);
-//    if(__rtc->onInitialize() == RTC_OK) {
-//      EC_setup(*exec_cxt);
-//      Connection_setup(*conf);
-//      free(exec_cxt);
-//      free(conf);
-//      Transport_init();
-//      EC_start();
-//    }
-//    return;
-//  }
 
 static int8_t m_Type = 0;
 static LifeCycleState m_Condition;
@@ -378,7 +360,7 @@ void RTno_loop()
         }
         if (pOutPort->pPortBuffer->hasNext(pOutPort->pPortBuffer))
         {
-          char *name = pOutPort->pName;
+          const char *name = pOutPort->pName;
           // uint8_t nameLen = strlen(name);
           uint8_t dataLen = pOutPort->pPortBuffer->getNextDataSize(pOutPort->pPortBuffer);
 

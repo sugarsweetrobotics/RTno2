@@ -16,43 +16,48 @@
 #include <string.h>
 #include <stdlib.h>
 
-class OutPortBase : public PortBase {
- private:
-
- public:
-  OutPortBase(const char* name, char tCode) {
-    PortBase_init(this, name, tCode, NullBuffer_create());
+class OutPortBase : public PortBase
+{
+private:
+public:
+  OutPortBase(const char *name, char tCode) : PortBase(name, tCode, NullBuffer_create())
+  {
+    // (this, name, tCode, NullBuffer_create());
   }
 
- public:
-
+public:
 };
 
-template<typename T>
-class OutPort : public OutPortBase {
- private:
-  T* m_pData;
-  
- public:
- OutPort(const char* name, T& data) : OutPortBase(name, data.typeCode) {
+template <typename T>
+class OutPort : public OutPortBase
+{
+private:
+  T *m_pData;
+
+public:
+  OutPort(const char *name, T &data) : OutPortBase(name, data.typeCode)
+  {
     m_pData = &data;
   }
   ~OutPort() {}
 
- public:
-  uint8_t write() {
+public:
+  uint8_t write()
+  {
     uint8_t size = TypeCode_getElementSize(m_pData->typeCode);
-    if(TypeCode_isSequence(m_pData->typeCode)) {
-      size *= ((SequenceBase*)&(m_pData->data))->length();
+    if (TypeCode_isSequence(m_pData->typeCode))
+    {
+      size *= ((SequenceBase *)&(m_pData->data))->length();
       pPortBuffer->push(pPortBuffer,
-			(uint8_t*)((SequenceBase*)&(m_pData->data))->getData(),
-			size);
-    } else {
-      pPortBuffer->push(pPortBuffer, (const uint8_t*)&(m_pData->data), size);
+                        (uint8_t *)((SequenceBase *)&(m_pData->data))->getData(),
+                        size);
+    }
+    else
+    {
+      pPortBuffer->push(pPortBuffer, (const uint8_t *)&(m_pData->data), size);
     }
     return size;
   }
 };
-
 
 #endif
