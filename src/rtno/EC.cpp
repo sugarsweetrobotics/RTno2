@@ -57,6 +57,7 @@ ReturnValue_t EC_activate_component()
 ReturnValue_t EC_fault()
 {
     m_Condition = RTC_STATE_ERROR;
+    // digitalWrite(LED_BUILTIN, HIGH);
     return RTC_OK;
 }
 

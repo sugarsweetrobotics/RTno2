@@ -39,6 +39,7 @@
 // #define TEST_SEQUENCE
 #define TEST_SIMPLE_BYTE_DATA
 #define TEST_SIMPLE_MULTIBYTE_DATA
+#define TEST_SIMPLE_BYTE_DATA_SEQUENCE
 
 /**
  * This function is called at first.
@@ -102,14 +103,16 @@ TimedDouble double_in;
 InPort<TimedDouble> double_inIn("double_in", double_in);
 #endif
 
-#if defined TEST_SEQUENCE
+#if defined TEST_SIMPLE_BYTE_DATA_SEQUENCE
 TimedBooleanSeq bool_seq_in;
 InPort<TimedBooleanSeq> bool_seq_inIn("bool_seq_in", bool_seq_in);
 TimedCharSeq char_seq_in;
 InPort<TimedCharSeq> char_seq_inIn("char_seq_in", char_seq_in);
 TimedOctetSeq octet_seq_in;
 InPort<TimedOctetSeq> octet_seq_inIn("octet_seq_in", octet_seq_in);
+#endif
 
+#if defined TEST_SEQUENCE
 TimedLongSeq long_seq_in;
 InPort<TimedLongSeq> long_seq_inIn("long_seq_in", long_seq_in);
 TimedFloatSeq float_seq_in;
@@ -129,21 +132,25 @@ TimedOctet octet_out;
 OutPort<TimedOctet> octet_outOut("octet_out", octet_out);
 #endif
 
+#if defined TEST_SIMPLE_MULTIBYTE_DATA
 TimedLong long_out;
 OutPort<TimedLong> long_outOut("long_out", long_out);
 TimedFloat float_out;
 OutPort<TimedFloat> float_outOut("float_out", float_out);
 TimedDouble double_out;
 OutPort<TimedDouble> double_outOut("double_out", double_out);
+#endif
 
-#if defined TEST_SEQUENCE
+#if defined TEST_SIMPLE_BYTE_DATA_SEQUENCE
 TimedBooleanSeq bool_seq_out;
 OutPort<TimedBooleanSeq> bool_seq_outOut("bool_seq_out", bool_seq_out);
 TimedCharSeq char_seq_out;
 OutPort<TimedCharSeq> char_seq_outOut("char_seq_out", char_seq_out);
 TimedOctetSeq octet_seq_out;
 OutPort<TimedOctetSeq> octet_seq_outOut("octet_seq_out", octet_seq_out);
+#endif
 
+#if defined TEST_SEQUENCE
 TimedLongSeq long_seq_out;
 OutPort<TimedLongSeq> long_seq_outOut("long_seq_out", long_seq_out);
 TimedFloatSeq float_seq_out;
@@ -179,14 +186,16 @@ int onInitialize()
   addOutPort(double_outOut);
 #endif
 
-#if defined TEST_SEQUENCE
+#if defined TEST_SIMPLE_BYTE_DATA_SEQUENCE
   addInPort(bool_seq_inIn);
   addOutPort(bool_seq_outOut);
   addInPort(char_seq_inIn);
   addOutPort(char_seq_outOut);
   addInPort(octet_seq_inIn);
   addOutPort(octet_seq_outOut);
+#endif
 
+#if defined TEST_SEQUENCE
   addInPort(long_seq_inIn);
   addOutPort(long_seq_outOut);
   addInPort(float_seq_inIn);
@@ -227,7 +236,7 @@ int onActivated()
   double_out.data = 1.0;
 #endif
 
-#if defined TEST_SEQUENCE
+#if defined TEST_SIMPLE_BYTE_DATA_SEQUENCE
   bool_seq_in.data.length(1);
   bool_seq_in.data[0] = false;
   bool_seq_out.data.length(1);
@@ -240,7 +249,9 @@ int onActivated()
   octet_seq_in.data[0] = 1;
   octet_seq_out.data.length(1);
   octet_seq_out.data[0] = 1;
+#endif
 
+#if defined TEST_SEQUENCE
   long_seq_in.data.length(1);
   long_seq_in.data[0] = 1;
   long_seq_out.data.length(1);
@@ -284,7 +295,7 @@ int onDeactivated()
   double_out.data = 1.0;
 #endif
 
-#if defined TEST_SEQUENCE
+#if defined TEST_SIMPLE_BYTE_DATA_SEQUENCE
   bool_seq_in.data.length(1);
   bool_seq_in.data[0] = false;
   bool_seq_out.data.length(1);
@@ -297,7 +308,9 @@ int onDeactivated()
   octet_seq_in.data[0] = 1;
   octet_seq_out.data.length(1);
   octet_seq_out.data[0] = 1;
+#endif
 
+#if defined TEST_SEQUENCE
   long_seq_in.data.length(1);
   long_seq_in.data[0] = 1;
   long_seq_out.data.length(1);
@@ -370,7 +383,7 @@ int onExecute()
   double_outOut.write();
 #endif
 
-#if defined TEST_SEQUENCE
+#if defined TEST_SIMPLE_BYTE_DATA_SEQUENCE
   if (bool_seq_inIn.isNew())
   {
     bool_seq_inIn.read();
@@ -403,7 +416,9 @@ int onExecute()
     octet_seq_out.data[i] = octet_seq_in.data[i];
   }
   octet_seq_outOut.write();
+#endif
 
+#if defined TEST_SEQUENCE
   if (long_seq_inIn.isNew())
   {
     long_seq_inIn.read();

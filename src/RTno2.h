@@ -30,10 +30,7 @@
 #include "EthernetInterface.h"
 #endif
 
-#ifdef USE_TIMER1_EC
 #include "ec/Timer1ExecutionContext.h"
-#endif
-
 #include "ec/TimerOneExecutionContext.h"
 
 #include "ec/FSPTimerExecutionContext.h"

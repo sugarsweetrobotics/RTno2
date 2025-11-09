@@ -2,7 +2,7 @@
  * RTnoTemplate.ino
  * RTno is RT-middleware and arduino.
  *
- * Using RTno, arduino device can communicate any RT-components 
+ * Using RTno, arduino device can communicate any RT-components
  *  through the RTno-proxy component which is launched in PC.
  * Connect arduino with USB, and program with RTno library.
  * You do not have to define any protocols to establish communication
@@ -28,27 +28,28 @@
  *  to use Timer1ExecutionContext
  * See Timer1EC example to know in more detail
  */
-//#include <Timer1ExecutionContext.h>
+// #include <Timer1ExecutionContext.h>
 
-/** 
+/**
  * Include UART.h header
  *  to use ConnectionTypeSerial1, 2, 3
  */
-#include <RTno.h>
+#include <RTno2.h>
 
 /**
  * This function is called at first.
  * conf._default.baudrate: baudrate of serial communication
  * exec_cxt.periodic.type: reserved but not used.
  */
-void rtcconf(config_str& conf, exec_cxt_str& exec_cxt) {
-  conf._default.connection_type = ConnectionTypeSerial1;
+void rtcconf(config_t &conf, exec_cxt_t &exec_cxt)
+{
+  conf._default.connection_type = ConnectionType::SERIAL1;
   // conf._default.connection_type = ConnectionTypeSerial2; // This configuration is avaiable in Arduino-Mega
   // conf._default.connection_type = ConnectionTypeSerial3; // This configuration is avaiable in Arduino-Mega
   // conf._default.connection_type = ConnectionTypeEtherTcp; // This configuration is avaiable with Ethernet Shield.
   conf._default.baudrate = 57600;
-  exec_cxt.periodic.type = ProxySynchronousExecutionContext;
-  
+  exec_cxt.periodic.type = ECType::PROXY_SYNCHRONOUS;
+
   // Configurations Below are configuration parameter for EtherTcp connection.
   // conf._default.port = 23;
   // conf._default.mac_address = MacAddr(0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED);
@@ -61,8 +62,7 @@ void rtcconf(config_str& conf, exec_cxt_str& exec_cxt) {
   // exec_cxt.periodic.rate = 1000; // [Hz] This option is indispensable when type is Timer*ExecutionContext.
 }
 
-
-/** 
+/**
  * Declaration Division:
  *
  * DataPort and Data Buffer should be placed here.
@@ -78,190 +78,163 @@ void rtcconf(config_str& conf, exec_cxt_str& exec_cxt) {
  * Please refer following comments. If you need to use some ports,
  * uncomment the line you want to declare.
  **/
-class RTC : public DataFlowComponentBase {
+/* InPorts */
+// TimedBoolean bool_in;
+// InPort<TimedBoolean> bool_inIn("bool_in", bool_in);
+// TimedChar char_in;
+// InPort<TimedChar> char_inIn("char_in", char_in);
+// TimedOctet octet_in;
+// InPort<TimedOctet> octet_inIn("octet_in", octet_in);
 
-  // TimedLong in0;
-  // InPort<TimedLong> in0In;
+// TimedLong long_in;
+// InPort<TimedLong> long_inIn("long_in", long_in);
+// TimedFloat float_in;
+// InPort<TimedFloat> float_inIn("float_in", float_in);
+// TimedDouble double_in;
+// InPort<TimedDouble> double_inIn("double_in", double_in);
 
-  // TimedDouble in1;
-  // InPort<TimedDouble> in1In;
+// TimedBooleanSeq bool_seq_in;
+// InPort<TimedBooleanSeq> bool_seq_inIn("bool_seq_in", bool_seq_in);
+// TimedCharSeq char_seq_in;
+// InPort<TimedCharSeq> char_seq_inIn("char_seq_in", char_seq_in);
+// TimedOctetSeq octet_seq_in;
+// InPort<TimedOctetSeq> octet_seq_inIn("octet_seq_in", octet_seq_in);
 
-  // TimedLongSeq in2;
-  // InPort<TimedLongSeq> in2In;
+// TimedLongSeq long_seq_in;
+// InPort<TimedLongSeq> long_seq_inIn("long_seq_in", long_seq_in);
+// TimedFloatSeq float_seq_in;
+// InPort<TimedFloatSeq> float_seq_inIn("float_seq_in", float_seq_in);
+// TimedDoubleSeq double_seq_in;
+// InPort<TimedDoubleSeq> double_seq_inIn("double_seq_in", double_seq_in);
 
+/* OutPorts */
 
-  // TimedLong out0;
-  // OutPort<TimedLong> out0Out;
+// TimedBoolean bool_out;
+// OutPort<TimedBoolean> bool_outOut("bool_out", bool_out);
+// TimedChar char_out;
+// OutPort<TimedChar> char_outOut("char_out", char_out);
+// TimedOctet octet_out;
+// OutPort<TimedOctet> octet_outOut("octet_out", octet_out);
 
-  // TimedFloat out1;
-  // OutPort<TimedFloat> out1Out;
+// TimedLong long_out;
+// OutPort<TimedLong> long_outOut("long_out", long_out);
+// TimedFloat float_out;
+// OutPort<TimedFloat> float_outOut("float_out", float_out);
+// TimedDouble double_out;
+// OutPort<TimedDouble> double_outOut("double_out", double_out);
 
-  // TimedDouble out2;
-  // OutPort<TimedDouble> out2Out;
+// TimedBooleanSeq bool_seq_out;
+// OutPort<TimedBooleanSeq> bool_seq_outOut("bool_seq_out", bool_seq_out);
+// TimedCharSeq char_seq_out;
+// OutPort<TimedCharSeq> char_seq_outOut("char_seq_out", char_seq_out);
+// TimedOctetSeq octet_seq_out;
+// OutPort<TimedOctetSeq> octet_seq_outOut("octet_seq_out", octet_seq_out);
 
-  // TimedLongSeq out3;
-  // OutPort<TimedLongSeq> out3Out;
-
-  int dummy;
-  public:
-  RTC(): dummy(0)
-  // , in0In("in0", in0)
-  // , in1In("in1", in1)
-  // , in2In("in2", in2)
-  // , out0Out("out0", out0)
-  // , out1Out("out1", out1)
-  // , out2Out("out2", out2)
-  // , out3Out("out3", out3)
-  {}
-
-  //////////////////////////////////////////
-  // on_initialize
-  //
-  // This function is called in the initialization
-  // sequence when th processor is turned on.
-  // In on_initialize, usually DataPorts are added.
-  //
-  //////////////////////////////////////////
-  int onInitialize() {
-    /* Data Ports are added in this section.*/
-    /*    
-    addInPort(in0In);
-    addInPort(in1In);
-    addInPort(in2In);
-    addOutPort(out0Out);
-    addOutPort(out1Out);
-    addOutPort(out2Out);
-    addOutPort(out3Out);
-    */
-    
-    // Some initialization (like port direction setting)
-    // int LED = 13;
-    // pinMode(LED, OUTPUT);
-    // digitalWrite(LED, HIGH);
-    return RTC_OK; 
-  }
-
-  ////////////////////////////////////////////
-  // on_activated
-  // This function is called when the RTnoRTC
-  // is activated. When the activation, the RTnoRTC
-  // sends message to call this function remotely.
-  // If this function is failed (return value 
-  // is RTC_ERROR), RTno will enter ERROR condition.
-  ////////////////////////////////////////////
-  int onActivated() {
-    // Write here initialization code.
-    
-    return RTC_OK; 
-  }
-
-  /////////////////////////////////////////////
-  // on_deactivated
-  // This function is called when the RTnoRTC
-  // is deactivated.
-  /////////////////////////////////////////////
-  int onDeactivated()
-  {
-    // Write here finalization code.
-
-    return RTC_OK;
-  }
-
-  //////////////////////////////////////////////
-  // This function is repeatedly called when the 
-  // RTno is in the ACTIVE condition.
-  // If this function is failed (return value is
-  // RTC_ERROR), RTno immediately enter into the 
-  // ERROR condition.r
-  //////////////////////////////////////////////
-  int onExecute() {
-    // const int LED = 13;
-    // if (in0In.isNew()) {
-    //   int data = in0In.read();
-    //   if (in0.data == 2) {
-    //     digitalWrite(LED, LOW);
-    //   } else if (in0.data == 3) {
-    //     digitalWrite(LED, HIGH);
-    //   }
-    // }
-
-    // if (in1In.isNew()) {
-    //   in1In.read();
-    //   if (in1.data > 3.0) {
-    //     digitalWrite(LED, HIGH);
-    //   } else if (in1.data < -1.0) {
-    //     digitalWrite(LED, LOW);
-    //   }
-    // }
-
-    // if (in2In.isNew()) {
-    //   in2In.read();
-    //   if (in2.data.length() == 3) {
-    //     digitalWrite(LED, HIGH);
-    //   } else {
-    //     digitalWrite(LED, LOW);
-    //   }
-    // }
-
-    // out0.data = 1234;
-    // out0Out.write();
-
-
-    // out1.data = 54.321;
-    // out1Out.write();
-
-    // out2.data = 54.321;
-    // out2Out.write();
-
-
-    // out3.data.length(3);
-    // out3.data[0] = 4;
-    // out3.data[1] = 5;
-    // out3.data[2] = 6;
-    // out3Out.write();
-
-    return RTC_OK;
-  }
-
-
-  //////////////////////////////////////
-  // on_error
-  // This function is repeatedly called when
-  // the RTno is in the ERROR condition.
-  // The ERROR condition can be recovered,
-  // when the RTno is reset.
-  ///////////////////////////////////////
-  int onError()
-  {
-    return RTC_OK;
-  }
-
-  ////////////////////////////////////////
-  // This function is called when 
-  // the RTno is reset. If on_reset is
-  // succeeded, the RTno will enter into
-  // the INACTIVE condition. If failed 
-  // (return value is RTC_ERROR), RTno
-  // will stay in ERROR condition.ec
-  ///////////////////////////////////////
-  int onReset()
-  {
-    return RTC_OK;
-  }
-
-};
+// TimedLongSeq long_seq_out;
+// OutPort<TimedLongSeq> long_seq_outOut("long_seq_out", long_seq_out);
+// TimedFloatSeq float_seq_out;
+// OutPort<TimedFloatSeq> float_seq_outOut("float_seq_out", float_seq_out);
+// TimedDoubleSeq double_seq_out;
+// OutPort<TimedDoubleSeq> double_seq_outOut("double_seq_out", double_seq_out);
 
 //////////////////////////////////////////
-// DO NOT MODIFY THESE FUNCTIONS
+// on_initialize
+//
+// This function is called in the initialization
+// sequence when th processor is turned on.
+// In on_initialize, usually DataPorts are added.
+//
 //////////////////////////////////////////
-void setup() {
-  RTno_setup(new RTC());
+int onInitialize()
+{
+  // addInPort(bool_inIn);
+  // addOutPort(bool_outOut);
+  // addInPort(char_inIn);
+  // addOutPort(char_outOut);
+  // addInPort(octet_inIn);
+  // addOutPort(octet_outOut);
+
+  // addInPort(long_inIn);
+  // addOutPort(long_outOut);
+  // addInPort(float_inIn);
+  // addOutPort(float_outOut);
+  // addInPort(double_inIn);
+  // addOutPort(double_outOut);
+
+  // addInPort(bool_seq_inIn);
+  // addOutPort(bool_seq_outOut);
+  // addInPort(char_seq_inIn);
+  // addOutPort(char_seq_outOut);
+  // addInPort(octet_seq_inIn);
+  // addOutPort(octet_seq_outOut);
+
+  // addInPort(long_seq_inIn);
+  // addOutPort(long_seq_outOut);
+  // addInPort(float_seq_inIn);
+  // addOutPort(float_seq_outOut);
+  // addInPort(double_seq_inIn);
+  // addOutPort(double_seq_outOut);
+  return RTC_OK;
 }
 
-//////////////////////////////////////////
-// DO NOT MODIFY THESE FUNCTIONS
-//////////////////////////////////////////
-void loop() {
-  RTno_loop();
+////////////////////////////////////////////
+// on_activated
+// This function is called when the RTnoRTC
+// is activated. When the activation, the RTnoRTC
+// sends message to call this function remotely.
+// If this function is failed (return value
+// is RTC_ERROR), RTno will enter ERROR condition.
+////////////////////////////////////////////
+int onActivated()
+{
+  // Write here initialization code.
+  return RTC_OK;
 }
 
+/////////////////////////////////////////////
+// on_deactivated
+// This function is called when the RTnoRTC
+// is deactivated.
+/////////////////////////////////////////////
+int onDeactivated()
+{
+  // Write here finalization code.
+  return RTC_OK;
+}
+
+//////////////////////////////////////////////
+// This function is repeatedly called when the
+// RTno is in the ACTIVE condition.
+// If this function is failed (return value is
+// RTC_ERROR), RTno immediately enter into the
+// ERROR condition.r
+//////////////////////////////////////////////
+int onExecute()
+{
+  return RTC_OK;
+}
+
+//////////////////////////////////////
+// on_error
+// This function is repeatedly called when
+// the RTno is in the ERROR condition.
+// The ERROR condition can be recovered,
+// when the RTno is reset.
+///////////////////////////////////////
+int onError()
+{
+  return RTC_OK;
+}
+
+////////////////////////////////////////
+// This function is called when
+// the RTno is reset. If on_reset is
+// succeeded, the RTno will enter into
+// the INACTIVE condition. If failed
+// (return value is RTC_ERROR), RTno
+// will stay in ERROR condition.ec
+///////////////////////////////////////
+int onReset()
+{
+  return RTC_OK;
+}
