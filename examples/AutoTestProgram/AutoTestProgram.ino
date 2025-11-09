@@ -36,19 +36,23 @@
  */
 #include <RTno2.h>
 
+// #define TEST_SEQUENCE
+#define TEST_SIMPLE_BYTE_DATA
+#define TEST_SIMPLE_MULTIBYTE_DATA
+
 /**
  * This function is called at first.
  * conf._default.baudrate: baudrate of serial communication
  * exec_cxt.periodic.type: reserved but not used.
  */
-void rtcconf(config_str &conf, exec_cxt_str &exec_cxt)
+void rtcconf(config_t &conf, exec_cxt_t &exec_cxt)
 {
-  conf._default.connection_type = ConnectionTypeSerial1;
+  conf._default.connection_type = ConnectionType::SERIAL1;
   // conf._default.connection_type = ConnectionTypeSerial2; // This configuration is avaiable in Arduino-Mega
   // conf._default.connection_type = ConnectionTypeSerial3; // This configuration is avaiable in Arduino-Mega
   // conf._default.connection_type = ConnectionTypeEtherTcp; // This configuration is avaiable with Ethernet Shield.
   conf._default.baudrate = 57600;
-  exec_cxt.periodic.type = ProxySynchronousExecutionContext;
+  exec_cxt.periodic.type = ECType::PROXY_SYNCHRONOUS;
 
   // Configurations Below are configuration parameter for EtherTcp connection.
   // conf._default.port = 23;
@@ -79,20 +83,26 @@ void rtcconf(config_str &conf, exec_cxt_str &exec_cxt)
  * uncomment the line you want to declare.
  **/
 /* InPorts */
+
+#if defined TEST_SIMPLE_BYTE_DATA
 TimedBoolean bool_in;
 InPort<TimedBoolean> bool_inIn("bool_in", bool_in);
 TimedChar char_in;
 InPort<TimedChar> char_inIn("char_in", char_in);
 TimedOctet octet_in;
 InPort<TimedOctet> octet_inIn("octet_in", octet_in);
+#endif
 
+#if defined TEST_SIMPLE_MULTIBYTE_DATA
 TimedLong long_in;
 InPort<TimedLong> long_inIn("long_in", long_in);
 TimedFloat float_in;
 InPort<TimedFloat> float_inIn("float_in", float_in);
 TimedDouble double_in;
 InPort<TimedDouble> double_inIn("double_in", double_in);
+#endif
 
+#if defined TEST_SEQUENCE
 TimedBooleanSeq bool_seq_in;
 InPort<TimedBooleanSeq> bool_seq_inIn("bool_seq_in", bool_seq_in);
 TimedCharSeq char_seq_in;
@@ -106,14 +116,18 @@ TimedFloatSeq float_seq_in;
 InPort<TimedFloatSeq> float_seq_inIn("float_seq_in", float_seq_in);
 TimedDoubleSeq double_seq_in;
 InPort<TimedDoubleSeq> double_seq_inIn("double_seq_in", double_seq_in);
+#endif
 
 /* OutPorts */
+
+#if defined TEST_SIMPLE_BYTE_DATA
 TimedBoolean bool_out;
 OutPort<TimedBoolean> bool_outOut("bool_out", bool_out);
 TimedChar char_out;
 OutPort<TimedChar> char_outOut("char_out", char_out);
 TimedOctet octet_out;
 OutPort<TimedOctet> octet_outOut("octet_out", octet_out);
+#endif
 
 TimedLong long_out;
 OutPort<TimedLong> long_outOut("long_out", long_out);
@@ -122,6 +136,7 @@ OutPort<TimedFloat> float_outOut("float_out", float_out);
 TimedDouble double_out;
 OutPort<TimedDouble> double_outOut("double_out", double_out);
 
+#if defined TEST_SEQUENCE
 TimedBooleanSeq bool_seq_out;
 OutPort<TimedBooleanSeq> bool_seq_outOut("bool_seq_out", bool_seq_out);
 TimedCharSeq char_seq_out;
@@ -135,7 +150,7 @@ TimedFloatSeq float_seq_out;
 OutPort<TimedFloatSeq> float_seq_outOut("float_seq_out", float_seq_out);
 TimedDoubleSeq double_seq_out;
 OutPort<TimedDoubleSeq> double_seq_outOut("double_seq_out", double_seq_out);
-
+#endif
 //////////////////////////////////////////
 // on_initialize
 //
@@ -146,20 +161,25 @@ OutPort<TimedDoubleSeq> double_seq_outOut("double_seq_out", double_seq_out);
 //////////////////////////////////////////
 int onInitialize()
 {
+#if defined TEST_SIMPLE_BYTE_DATA
   addInPort(bool_inIn);
   addOutPort(bool_outOut);
   addInPort(char_inIn);
   addOutPort(char_outOut);
   addInPort(octet_inIn);
   addOutPort(octet_outOut);
+#endif
 
+#if defined TEST_SIMPLE_MULTIBYTE_DATA
   addInPort(long_inIn);
   addOutPort(long_outOut);
   addInPort(float_inIn);
   addOutPort(float_outOut);
   addInPort(double_inIn);
   addOutPort(double_outOut);
+#endif
 
+#if defined TEST_SEQUENCE
   addInPort(bool_seq_inIn);
   addOutPort(bool_seq_outOut);
   addInPort(char_seq_inIn);
@@ -173,7 +193,7 @@ int onInitialize()
   addOutPort(float_seq_outOut);
   addInPort(double_seq_inIn);
   addOutPort(double_seq_outOut);
-
+#endif
   return RTC_OK;
 }
 
@@ -189,20 +209,25 @@ int onActivated()
 {
   // Write here initialization code.
 
+#if defined TEST_SIMPLE_BYTE_DATA
   bool_in.data = false;
   bool_out.data = false;
   char_in.data = 'a';
   char_out.data = 'a';
   octet_in.data = 1;
   octet_out.data = 1;
+#endif
 
+#if defined TEST_SIMPLE_MULTIBYTE_DATA
   long_in.data = 1;
   long_out.data = 1;
   float_in.data = 1.0f;
   float_out.data = 1.0f;
   double_in.data = 1.0;
   double_out.data = 1.0;
+#endif
 
+#if defined TEST_SEQUENCE
   bool_seq_in.data.length(1);
   bool_seq_in.data[0] = false;
   bool_seq_out.data.length(1);
@@ -228,7 +253,7 @@ int onActivated()
   double_seq_in.data[0] = 1.0;
   double_seq_out.data.length(1);
   double_seq_out.data[0] = 1.0;
-
+#endif
   return RTC_OK;
 }
 
@@ -241,20 +266,25 @@ int onDeactivated()
 {
   // Write here finalization code.
 
+#if defined TEST_SIMPLE_BYTE_DATA
   bool_in.data = false;
   bool_out.data = false;
   char_in.data = 'a';
   char_out.data = 'a';
   octet_in.data = 1;
   octet_out.data = 1;
+#endif
 
+#if defined TEST_SIMPLE_MULTIBYTE_DATA
   long_in.data = 1;
   long_out.data = 1;
   float_in.data = 1.0f;
   float_out.data = 1.0f;
   double_in.data = 1.0;
   double_out.data = 1.0;
+#endif
 
+#if defined TEST_SEQUENCE
   bool_seq_in.data.length(1);
   bool_seq_in.data[0] = false;
   bool_seq_out.data.length(1);
@@ -280,6 +310,7 @@ int onDeactivated()
   double_seq_in.data[0] = 1.0;
   double_seq_out.data.length(1);
   double_seq_out.data[0] = 1.0;
+#endif
   return RTC_OK;
 }
 
@@ -293,6 +324,7 @@ int onDeactivated()
 int onExecute()
 {
 
+#if defined TEST_SIMPLE_BYTE_DATA
   if (bool_inIn.isNew())
   {
     bool_inIn.read();
@@ -313,7 +345,9 @@ int onExecute()
   }
   octet_out.data = octet_in.data;
   octet_outOut.write();
+#endif
 
+#if defined TEST_SIMPLE_MULTIBYTE_DATA
   if (long_inIn.isNew())
   {
     long_inIn.read();
@@ -334,7 +368,9 @@ int onExecute()
   }
   double_out.data = double_in.data;
   double_outOut.write();
+#endif
 
+#if defined TEST_SEQUENCE
   if (bool_seq_inIn.isNew())
   {
     bool_seq_inIn.read();
@@ -400,7 +436,7 @@ int onExecute()
     double_seq_out.data[i] = double_seq_in.data[i];
   }
   double_seq_outOut.write();
-
+#endif
   return RTC_OK;
 }
 
