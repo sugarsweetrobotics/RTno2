@@ -121,113 +121,113 @@ void RTno_setup(int (*on_initialize)(), int (*on_activated)(), int (*on_deactiva
   return;
 }
 
-static int8_t m_Type = 0;
-static LifeCycleState m_Condition;
+// static int8_t m_Type = 0;
+// static LifeCycleState m_Condition;
 
-void EC_init(int8_t Type)
-{
-  m_Type = Type;
-  m_Condition = RTC_STATE_INACTIVE;
-}
+// void EC_init(int8_t Type)
+// {
+//   m_Type = Type;
+//   m_Condition = RTC_STATE_INACTIVE;
+// }
 
-int8_t EC_get_type()
-{
-  return m_Type;
-}
+// int8_t EC_get_type()
+// {
+//   return m_Type;
+// }
 
-LifeCycleState EC_get_component_state()
-{
-  return m_Condition;
-}
+// LifeCycleState EC_get_component_state()
+// {
+//   return m_Condition;
+// }
 
-ReturnValue_t EC_activate_component()
-{
-  if (m_Condition != RTC_STATE_INACTIVE)
-  {
-    return RTC_PRECONDITION_NOT_MET;
-  }
+// ReturnValue_t EC_activate_component()
+// {
+//   if (m_Condition != RTC_STATE_INACTIVE)
+//   {
+//     return RTC_PRECONDITION_NOT_MET;
+//   }
 
-  // if(__rtc->onActivated() == RTC_OK) {
-  if (RTno_onActivated() == RTC_OK)
-  {
-    m_Condition = RTC_STATE_ACTIVE;
-    return RTC_OK;
-  }
+//   // if(__rtc->onActivated() == RTC_OK) {
+//   if (RTno_onActivated() == RTC_OK)
+//   {
+//     m_Condition = RTC_STATE_ACTIVE;
+//     return RTC_OK;
+//   }
 
-  m_Condition = RTC_STATE_ERROR;
-  return RTC_ERROR;
-}
+//   m_Condition = RTC_STATE_ERROR;
+//   return RTC_ERROR;
+// }
 
-ReturnValue_t EC_fault()
-{
-  m_Condition = RTC_STATE_ERROR;
-  return RTC_OK;
-}
+// ReturnValue_t EC_fault()
+// {
+//   m_Condition = RTC_STATE_ERROR;
+//   return RTC_OK;
+// }
 
-ReturnValue_t EC_deactivate_component()
-{
-  if (m_Condition != RTC_STATE_ACTIVE)
-  {
-    return RTC_PRECONDITION_NOT_MET;
-  }
+// ReturnValue_t EC_deactivate_component()
+// {
+//   if (m_Condition != RTC_STATE_ACTIVE)
+//   {
+//     return RTC_PRECONDITION_NOT_MET;
+//   }
 
-  // if(__rtc->onDeactivated() == RTC_OK) {
-  if (RTno_onDeactivated() == RTC_OK)
-  {
-    m_Condition = RTC_STATE_INACTIVE;
-    return RTC_OK;
-  }
-  else
-  {
-    m_Condition = RTC_STATE_ERROR;
-    return RTC_ERROR;
-  }
-}
+//   // if(__rtc->onDeactivated() == RTC_OK) {
+//   if (RTno_onDeactivated() == RTC_OK)
+//   {
+//     m_Condition = RTC_STATE_INACTIVE;
+//     return RTC_OK;
+//   }
+//   else
+//   {
+//     m_Condition = RTC_STATE_ERROR;
+//     return RTC_ERROR;
+//   }
+// }
 
-ReturnValue_t EC_execute()
-{
-  if (m_Condition != RTC_STATE_ACTIVE)
-  {
-    return RTC_PRECONDITION_NOT_MET;
-  }
+// ReturnValue_t EC_execute()
+// {
+//   if (m_Condition != RTC_STATE_ACTIVE)
+//   {
+//     return RTC_PRECONDITION_NOT_MET;
+//   }
 
-  // if(__rtc->onExecute() == RTC_OK) {
-  if (RTno_onExecute() == RTC_OK)
-  {
-    return RTC_OK;
-  }
-  else
-  {
-    m_Condition = RTC_STATE_ERROR;
-    return RTC_ERROR;
-  }
-}
+//   // if(__rtc->onExecute() == RTC_OK) {
+//   if (RTno_onExecute() == RTC_OK)
+//   {
+//     return RTC_OK;
+//   }
+//   else
+//   {
+//     m_Condition = RTC_STATE_ERROR;
+//     return RTC_ERROR;
+//   }
+// }
 
-void EC_setup(exec_cxt_t &exec_cxt)
-{
-  switch (exec_cxt.periodic.type)
-  {
-// #ifdef USE_TIMER1_EC
-//   case Timer1ExecutionContext:
-//     Timer1EC_init(exec_cxt.periodic.rate);
+// void EC_setup(exec_cxt_t &exec_cxt)
+// {
+//   switch (exec_cxt.periodic.type)
+//   {
+// // #ifdef USE_TIMER1_EC
+// //   case Timer1ExecutionContext:
+// //     Timer1EC_init(exec_cxt.periodic.rate);
+// //     break;
+// // #endif // USE_TIMER1_EC
+// //   case ProxySynchronousExecutionContext:
+// #if defined(__AVR__)
+//   case ECType::TIMERONE:
+//     TimerOneEC_init(exec_cxt.periodic.rate);
 //     break;
-// #endif // USE_TIMER1_EC
-//   case ProxySynchronousExecutionContext:
-#if defined(__AVR__)
-  case ECType::TIMERONE:
-    TimerOneEC_init(exec_cxt.periodic.rate);
-    break;
-#endif
-#if defined(__arm__)
-  case ECType::FSPTIMER:
-    FSPTimerEC_init(exec_cxt.periodic.rate);
-    break;
-#endif
-  default:
-    ProxySyncEC_init();
-    break;
-  }
-}
+// #endif
+// #if defined(__arm__)
+//   case ECType::FSPTIMER:
+//     FSPTimerEC_init(exec_cxt.periodic.rate);
+//     break;
+// #endif
+//   default:
+//     ProxySyncEC_init();
+//     break;
+//   }
+// }
 
 RESULT to_result(ReturnValue_t &retval)
 {
