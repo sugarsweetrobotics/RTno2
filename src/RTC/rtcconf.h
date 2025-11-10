@@ -57,14 +57,14 @@ struct config_t
   struct default_t _default;
 };
 
-enum class ECType : uint8_t
+enum class ECType : int8_t
 {
   MAINLOOP = 1,
   PROXY_SYNCHRONOUS = 2,
   FSPTIMER = 3,
   TIMERONE = 4,
-
-  UNKNOWN = 255,
+  TIMER1 = 5,
+  UNKNOWN = 127,
 };
 
 struct exec_cxt_t

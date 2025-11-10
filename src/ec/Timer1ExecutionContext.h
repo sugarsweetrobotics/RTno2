@@ -11,7 +11,6 @@ static uint8_t m_Timer1ClockSetting;
 
 void Timer1EC_start()
 {
-
     char SREG_buf = SREG;
     cli();
     ICR1 = m_Timer1Period;

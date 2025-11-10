@@ -2,18 +2,18 @@
 #define EXECUTION_CONTEXT_HEADER_INCLUDED
 
 #include <stdint.h>
-
+#include "RTC/rtcconf.h"
 typedef int8_t LifeCycleState;
 typedef int8_t ReturnValue_t;
 
-void EC_init(int8_t);
+void EC_init(ECType);
 LifeCycleState EC_get_component_state();
 ReturnValue_t EC_activate_component();
 ReturnValue_t EC_deactivate_component();
 ReturnValue_t EC_execute();
 ReturnValue_t EC_error();
 ReturnValue_t EC_fault();
-int8_t EC_get_type();
+ECType EC_get_type();
 
 extern void (*EC_start)();
 extern void (*EC_suspend)();

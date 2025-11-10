@@ -244,10 +244,27 @@ RESULT to_result(ReturnValue_t &retval)
 
 void RTno_loop()
 {
+  if (EC_get_type() == ECType::MAINLOOP)
+  {
+    MainLoopEC_svc();
+    // static int ho;
+    // if (ho % 10 == 0)
+    // {
+    //   if (EC_get_component_state() == RTC_STATE_ACTIVE)
+    //     digitalWrite(LED_BUILTIN, HIGH);
+    // }
+    // else
+    // {
+    //   digitalWrite(LED_BUILTIN, LOW);
+    // }
+    // ho++;
+  }
+
   RESULT ret;
   uint8_t size_read;
-  uint32_t timeout = 100; // ms
-  ret = Transport_ReceivePacket((uint8_t *)m_pPacketBuffer, &size_read, timeout);
+  uint32_t start_packet_timeout = 10; // ms
+  uint32_t timeout = 100;             // ms
+  ret = Transport_ReceivePacket((uint8_t *)m_pPacketBuffer, &size_read, start_packet_timeout, timeout);
   if (ret != RESULT::OK)
   { // Timeout Error or Checksum Error
     if (ret == RESULT::PACKET_START_TIMEOUT)
@@ -274,7 +291,7 @@ void RTno_loop()
     }
     case COMMAND::GET_CONTEXT_TYPE:
     {
-      int8_t type = EC_get_type();
+      int8_t type = (int8_t)EC_get_type();
       Transport_SendPacket(COMMAND::GET_CONTEXT_TYPE, ret, 1, (uint8_t *)&type);
       break;
     }

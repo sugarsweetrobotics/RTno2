@@ -10,7 +10,7 @@
 
 using namespace ssr::rtno;
 
-static int8_t m_Type = 0;
+static ECType m_ECType;
 static LifeCycleState m_Condition;
 
 extern int (*RTno_onInitialize)();
@@ -20,15 +20,15 @@ extern int (*RTno_onExecute)();
 extern int (*RTno_onError)();
 extern int (*RTno_onReset)();
 
-void EC_init(int8_t Type)
+void EC_init(ECType Type)
 {
-    m_Type = Type;
+    m_ECType = Type;
     m_Condition = RTC_STATE_INACTIVE;
 }
 
-int8_t EC_get_type()
+ECType EC_get_type()
 {
-    return m_Type;
+    return m_ECType;
 }
 
 LifeCycleState EC_get_component_state()
@@ -114,12 +114,18 @@ void EC_setup(exec_cxt_t &exec_cxt)
     case ECType::TIMERONE:
         TimerOneEC_init(exec_cxt.periodic.rate);
         break;
+    case ECType::TIMER1:
+        Timer1EC_init(exec_cxt.periodic.rate);
+        break;
 #endif
 #if defined(__arm__)
     case ECType::FSPTIMER:
         FSPTimerEC_init(exec_cxt.periodic.rate);
         break;
 #endif
+    case ECType::MAINLOOP:
+        MainLoopEC_init(exec_cxt.periodic.rate);
+        break;
     default:
         ProxySyncEC_init();
         break;

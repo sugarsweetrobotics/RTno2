@@ -3,12 +3,12 @@
 
 #include <stdint.h>
 
-namespace ssr::rtno {
-    using duration_t = uint8_t;
-    static const duration_t INFINITE = 0xFF;
-    
-    void DurationClock_tick();
-    duration_t DurationClock_tack();
-}
+using duration_t = uint32_t;
+using time_t = uint32_t;
+static const duration_t INFINITE = 0xFFFFFFFF;
 
+void DurationClock_tick();
+duration_t DurationClock_tack();
+
+time_t DurationClock_now_ms();
 #endif
