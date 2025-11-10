@@ -3,25 +3,27 @@
  * RTno is RT-middleware and arduino.
  *
  * This program is just for JoyStick Shield sold by spackfun.com
- * 
+ *
  * Pin Settings:
- * 
+ *
  */
-#include <RTno.h>
+#define USE_MAINLOOP_EC
+#include <RTno2.h>
 
 /**
  * This function is called at first.
  * conf._default.baudrate: baudrate of serial communication
  * exec_cxt.periodic.type: reserved but not used.
  */
-void rtcconf(config_str& conf, exec_cxt_str& exec_cxt) {
-  conf._default.connection_type = ConnectionTypeSerial1;
+void rtcconf(config_t &conf, exec_cxt_t &exec_cxt)
+{
+  conf._default.connection_type = ConnectionType::SERIAL1;
   conf._default.baudrate = 57600;
-  exec_cxt.periodic.type = ProxySynchronousExecutionContext;
+  exec_cxt.periodic.type = ECType::MAINLOOP;
+  exec_cxt.periodic.rate = 100;
 }
 
-
-/** 
+/**
  * Declaration Division:
  *
  * DataPort and Data Buffer should be placed here.
@@ -36,7 +38,7 @@ void rtcconf(config_str& conf, exec_cxt_str& exec_cxt) {
  *
  * Please refer following comments. If you need to use some ports,
  * uncomment the line you want to declare.
-**/
+ **/
 
 TimedLongSeq stick;
 OutPort<TimedLongSeq> stickOut("stick", stick);
@@ -57,9 +59,10 @@ int dummy;
 // In on_initialize, usually DataPorts are added.
 //
 //////////////////////////////////////////
-int onInitialize() {
+int onInitialize()
+{
   /* Data Ports are added in this section.*/
-  
+
   addOutPort(stickOut);
   addOutPort(buttonOut);
 
@@ -67,16 +70,16 @@ int onInitialize() {
   pinMode(channelStickY, INPUT);
   pinMode(channelStickZ, INPUT);
   digitalWrite(channelStickZ, HIGH);
-  
+
   pinMode(3, INPUT_PULLUP);
   pinMode(4, INPUT_PULLUP);
   pinMode(5, INPUT_PULLUP);
   pinMode(6, INPUT_PULLUP);
-  
+
   stick.data.length(3);
   button.data.length(4);
-  
-  return RTC_OK; 
+
+  return RTC_OK;
 }
 
 ////////////////////////////////////////////
@@ -84,13 +87,14 @@ int onInitialize() {
 // This function is called when the RTnoRTC
 // is activated. When the activation, the RTnoRTC
 // sends message to call this function remotely.
-// If this function is failed (return value 
+// If this function is failed (return value
 // is RTC_ERROR), RTno will enter ERROR condition.
 ////////////////////////////////////////////
-int onActivated() {
+int onActivated()
+{
   // Write here initialization code.
-  
-  return RTC_OK; 
+
+  return RTC_OK;
 }
 
 /////////////////////////////////////////////
@@ -106,21 +110,22 @@ int onDeactivated()
 }
 
 //////////////////////////////////////////////
-// This function is repeatedly called when the 
+// This function is repeatedly called when the
 // RTno is in the ACTIVE condition.
 // If this function is failed (return value is
-// RTC_ERROR), RTno immediately enter into the 
+// RTC_ERROR), RTno immediately enter into the
 // ERROR condition.r
 //////////////////////////////////////////////
-int onExecute() {
+int onExecute()
+{
   /*
-  * Output digital data in Voltage unit.
-  */
-  stick.data[0] = analogRead(channelStickX); 
+   * Output digital data in Voltage unit.
+   */
+  stick.data[0] = analogRead(channelStickX);
   stick.data[1] = analogRead(channelStickY);
   stick.data[2] = digitalRead(channelStickZ);
   stickOut.write();
-  
+
   button.data[0] = digitalRead(3);
   button.data[1] = digitalRead(4);
   button.data[2] = digitalRead(5);
@@ -129,7 +134,6 @@ int onExecute() {
 
   return RTC_OK;
 }
-
 
 //////////////////////////////////////
 // on_error
@@ -144,28 +148,14 @@ int onError()
 }
 
 ////////////////////////////////////////
-// This function is called when 
+// This function is called when
 // the RTno is reset. If on_reset is
 // succeeded, the RTno will enter into
-// the INACTIVE condition. If failed 
+// the INACTIVE condition. If failed
 // (return value is RTC_ERROR), RTno
 // will stay in ERROR condition.ec
 ///////////////////////////////////////
 int onReset()
 {
   return RTC_OK;
-}
-
-//////////////////////////////////////////
-// DO NOT MODIFY THESE FUNCTIONS
-//////////////////////////////////////////
-void setup() {
-  RTno_setup(onInitialize, onActivated, onDeactivated, onExecute, onError, onReset);
-}
-
-//////////////////////////////////////////
-// DO NOT MODIFY THESE FUNCTIONS
-//////////////////////////////////////////
-void loop() {
-  RTno_loop();
 }

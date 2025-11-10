@@ -7,18 +7,18 @@
  * calls onExecute function periodically when the RTno
  * is in ACTIVE state.
  *
- * Timer1ExecutionContext uses TimerOne module to make 
- * the periodic interruption so the period is comparably 
+ * Timer1ExecutionContext uses TimerOne module to make
+ * the periodic interruption so the period is comparably
  * accurate, but the PWM 9, 10 can not be used when TimerOne
  * is used.
  *
- * TimerOne module is originally developed by 
+ * TimerOne module is originally developed by
  * http://code.google.com/p/arduino-timerone/
  *
  * This sample program just flash the LED (13th pin)
  * when RTno is activated.
  *
- * Change the exec_cxt.periodic.rate option and confirm 
+ * Change the exec_cxt.periodic.rate option and confirm
  * the flashing period changes.
  *
  * @author Yuki Suga
@@ -29,22 +29,22 @@
 // First, include this header.
 // Second, configure exec_cxt.periodic.type = Timer1EexecutionContext
 // Third, configure exec_cxt.periodic.rate = *** [Hz]
-#include <RTno.h>
-
+#include <RTno2.h>
 
 /**
-* This function is called at first.
-* conf._default.baudrate: baudrate of serial communication
-* exec_cxt.periodic.type: reserved but not used.
-*/
-void rtcconf(config_str& conf, exec_cxt_str& exec_cxt) {
-  conf._default.connection_type = ConnectionTypeSerial1;
+ * This function is called at first.
+ * conf._default.baudrate: baudrate of serial communication
+ * exec_cxt.periodic.type: reserved but not used.
+ */
+void rtcconf(config_t &conf, exec_cxt_t &exec_cxt)
+{
+  conf._default.connection_type = ConnectionType::SERIAL1;
   conf._default.baudrate = 57600;
-  exec_cxt.periodic.type = FSPTimerExecutionContext;
-  exec_cxt.periodic.rate = 10; // [Hz]
+  exec_cxt.periodic.type = ECType::FSPTIMER;
+  exec_cxt.periodic.rate = 1; // [Hz]
 }
 
-/** 
+/**
  * Declaration Division:
  *
  * DataPort and Data Buffer should be placed here.
@@ -61,12 +61,9 @@ void rtcconf(config_str& conf, exec_cxt_str& exec_cxt) {
  * uncomment the line you want to declare.
  **/
 
-
-
 // No InPort and OutPort.
 
 const int LED = 13;
-
 
 int dummy;
 
@@ -78,11 +75,12 @@ int dummy;
 // In on_initialize, usually DataPorts are added.
 //
 //////////////////////////////////////////
-int onInitialize() {
+int onInitialize()
+{
   /* Data Ports are added in this section.*/
   pinMode(LED, OUTPUT);
   digitalWrite(LED, LOW);
-  return RTC_OK; 
+  return RTC_OK;
 }
 
 ////////////////////////////////////////////
@@ -90,13 +88,14 @@ int onInitialize() {
 // This function is called when the RTnoRTC
 // is activated. When the activation, the RTnoRTC
 // sends message to call this function remotely.
-// If this function is failed (return value 
+// If this function is failed (return value
 // is RTC_ERROR), RTno will enter ERROR condition.
 ////////////////////////////////////////////
-int onActivated() {
+int onActivated()
+{
   // Write here initialization code.
-  
-  return RTC_OK; 
+
+  return RTC_OK;
 }
 
 /////////////////////////////////////////////
@@ -112,28 +111,31 @@ int onDeactivated()
 }
 
 //////////////////////////////////////////////
-// This function is repeatedly called when the 
+// This function is repeatedly called when the
 // RTno is in the ACTIVE condition.
 // If this function is failed (return value is
-// RTC_ERROR), RTno immediately enter into the 
+// RTC_ERROR), RTno immediately enter into the
 // ERROR condition.r
 //////////////////////////////////////////////
-int onExecute() {
+int onExecute()
+{
   // on_execute is called in 10 Hz
   // This function counts 10 times for HIGH, and 10 times for LOW.
   // therefore, LED blinks in 1 Hz.
   static int i;
   i++;
-  if(i == 10) {
+  if (i == 1)
+  {
     digitalWrite(LED, HIGH);
-  } else if(i == 20) {
+  }
+  else if (i == 2)
+  {
     digitalWrite(LED, LOW);
     i = 0;
   }
 
   return RTC_OK;
 }
-
 
 //////////////////////////////////////
 // on_error
@@ -148,29 +150,14 @@ int onError()
 }
 
 ////////////////////////////////////////
-// This function is called when 
+// This function is called when
 // the RTno is reset. If on_reset is
 // succeeded, the RTno will enter into
-// the INACTIVE condition. If failed 
+// the INACTIVE condition. If failed
 // (return value is RTC_ERROR), RTno
 // will stay in ERROR condition.ec
 ///////////////////////////////////////
 int onReset()
 {
   return RTC_OK;
-}
-
-
-//////////////////////////////////////////
-// DO NOT MODIFY THESE FUNCTIONS
-//////////////////////////////////////////
-void setup() {
-  RTno_setup(onInitialize, onActivated, onDeactivated, onExecute, onError, onReset);
-}
-
-//////////////////////////////////////////
-// DO NOT MODIFY THESE FUNCTIONS
-//////////////////////////////////////////
-void loop() {
-  RTno_loop();
 }

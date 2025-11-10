@@ -17,7 +17,7 @@
  *                If data is 0, corresponding output pin will LOW (0 Volt)
  *                If data is non-zero, pin will HIGH (Vcc level).
  *                The 6th element corresponds to the 13th pin (LED pin),
- *                so you can confirm this program's behavior without any 
+ *                so you can confirm this program's behavior without any
  *                modification to the arduino board.
  *
  * Port "out0"
@@ -28,25 +28,23 @@
  *                If data is non-zero, pin will HIGH (Vcc level).
  *
  */
-
-#include <UART.h>
-#include <RTno.h>
+#define USE_MAINLOOP_EC
+#include <RTno2.h>
 
 /**
  * This function is called at first.
  * conf._default.baudrate: baudrate of serial communication
  * exec_cxt.periodic.type: reserved but not used.
  */
-void rtcconf(config_str& conf, exec_cxt_str& exec_cxt) {
-  conf._default.connection_type = ConnectionTypeSerial1;
+void rtcconf(config_t &conf, exec_cxt_t &exec_cxt)
+{
+  conf._default.connection_type = ConnectionType::SERIAL1;
   conf._default.baudrate = 57600;
-  exec_cxt.periodic.type = ProxySynchronousExecutionContext;
+  exec_cxt.periodic.type = ECType::MAINLOOP;
+  exec_cxt.periodic.rate = 10; // [Hz]
 }
 
-
-
-
-/** 
+/**
  * Declaration Division:
  *
  * DataPort and Data Buffer should be placed here.
@@ -70,7 +68,6 @@ OutPort<TimedLongSeq> out0Out("out0", out0);
 
 int dummy;
 
-
 //////////////////////////////////////////
 // on_initialize
 //
@@ -79,20 +76,23 @@ int dummy;
 // In on_initialize, usually DataPorts are added.
 //
 //////////////////////////////////////////
-int onInitialize() {
+int onInitialize()
+{
   /* Data Ports are added in this section.
-  */
+   */
   addInPort(in0In);
   addOutPort(out0Out);
-  
+
   // Some initialization (like port direction setting)
-  for(int i = 0;i < 6;i++) {
-    pinMode(2+i, INPUT);
+  for (int i = 0; i < 6; i++)
+  {
+    pinMode(2 + i, INPUT);
   }
-  for(int i = 0;i < 6;i++) {
-    pinMode(8+i, OUTPUT);
+  for (int i = 0; i < 6; i++)
+  {
+    pinMode(8 + i, OUTPUT);
   }
-  
+
   return RTC_OK;
 }
 
@@ -101,58 +101,62 @@ int onInitialize() {
 // This function is called when the RTnoRTC
 // is activated. When the activation, the RTnoRTC
 // sends message to call this function remotely.
-// If this function is failed (return value 
+// If this function is failed (return value
 // is RTC_ERROR), RTno will enter ERROR condition.
 ////////////////////////////////////////////
-// int onActivated() {
-//   // Write here initialization code.
-  
-//   return RTC_OK; 
-// }
+int onActivated()
+{
+  // Write here initialization code.
+
+  return RTC_OK;
+}
 
 /////////////////////////////////////////////
 // on_deactivated
 // This function is called when the RTnoRTC
 // is deactivated.
 /////////////////////////////////////////////
-// int onDeactivated()
-// {
-//   // Write here finalization code.
+int onDeactivated()
+{
+  // Write here finalization code.
 
-//   return RTC_OK;
-// }
-
-//////////////////////////////////////////////
-// This function is repeatedly called when the 
-// RTno is in the ACTIVE condition.
-// If this function is failed (return value is
-// RTC_ERROR), RTno immediately enter into the 
-// ERROR condition.r
-//////////////////////////////////////////////
-int onExecute() {
-  /*
-  * Input digital data
-  */
-  
-  if(in0In.isNew()) {
-    in0In.read();
-    for(int i = 0;i < in0.data.length() && i < 6;i++) {
-      digitalWrite(8+i, in0.data[i]);
-    }
-  }
-  
-  /*
-  * Output digital data in Voltage unit.
-  */
-  out0.data.length(6);
-  for(int i = 0;i < 6;i++) {
-    out0.data[i] = digitalRead(2+i);
-  }
-  out0Out.write();
-    
-  return RTC_OK; 
+  return RTC_OK;
 }
 
+//////////////////////////////////////////////
+// This function is repeatedly called when the
+// RTno is in the ACTIVE condition.
+// If this function is failed (return value is
+// RTC_ERROR), RTno immediately enter into the
+// ERROR condition.r
+//////////////////////////////////////////////
+int onExecute()
+{
+  /*
+   * Input digital data
+   */
+
+  if (in0In.isNew())
+  {
+    in0In.read();
+    for (int i = 0; i < in0.data.length() && i < 6; i++)
+    {
+      digitalWrite(8 + i, in0.data[i]);
+    }
+  }
+
+  /*
+   * Output digital data in Voltage unit.
+   */
+  out0.data.length(6);
+  for (int i = 0; i < 6; i++)
+  {
+    out0.data[i] = digitalRead(2 + i);
+  }
+  out0Out.write();
+
+  return RTC_OK;
+}
 
 //////////////////////////////////////
 // on_error
@@ -167,29 +171,14 @@ int onError()
 }
 
 ////////////////////////////////////////
-// This function is called when 
+// This function is called when
 // the RTno is reset. If on_reset is
 // succeeded, the RTno will enter into
-// the INACTIVE condition. If failed 
+// the INACTIVE condition. If failed
 // (return value is RTC_ERROR), RTno
 // will stay in ERROR condition.ec
 ///////////////////////////////////////
 int onReset()
 {
   return RTC_OK;
-}
-
-
-//////////////////////////////////////////
-// DO NOT MODIFY THESE FUNCTIONS
-//////////////////////////////////////////
-void setup() {
-  RTno_setup(onInitialize, onActivated, onDeactivated, onExecute, onError, onReset);
-}
-
-//////////////////////////////////////////
-// DO NOT MODIFY THESE FUNCTIONS
-//////////////////////////////////////////
-void loop() {
-  RTno_loop();
 }

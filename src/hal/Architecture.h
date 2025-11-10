@@ -14,6 +14,7 @@ namespace ssr::rtno
     {
         ARCH_AVR = 1,
         ARCH_ARM = 2,
+        ARCH_ESP32 = 3,
         ARCH_UNKNOWN = 255,
     };
 
@@ -23,6 +24,8 @@ namespace ssr::rtno
         return Architecture::ARCH_AVR;
 #elif defined(__arm__)
         return Architecture::ARCH_ARM;
+#elif defined(ARDUINO_ARCH_ESP32)
+        return Architecture::ARCH_ESP32;
 #else
         return Architecture::ARCH_UNKNOWN;
 #endif

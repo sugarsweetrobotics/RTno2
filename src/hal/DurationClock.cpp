@@ -14,7 +14,7 @@ duration_t DurationClock_tack()
     return (duration_t)(millis()) - start_time;
 }
 
-time_t DurationClock_now_ms()
+duration_time_t DurationClock_now_ms()
 {
     return millis();
 }

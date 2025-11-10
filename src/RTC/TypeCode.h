@@ -40,7 +40,12 @@ constexpr char ascii_tolower(const char c)
 constexpr uint8_t TypeCode_getElementSizeInner(const char type_code)
 {
 
-#if not defined(__AVR__)
+#if defined(__AVR__)
+    return (type_code == 'b' || type_code == 'c' || type_code == 'o') ? 1 : (type_code == 's')                   ? 2
+                                                                        : (type_code == 'l' || type_code == 'f') ? 4
+                                                                        : (type_code == 'd')                     ? 4
+                                                                                                                 : 4;
+#elif defined(__arm__)
     return (type_code == 'b' || type_code == 'c' || type_code == 'o') ? 1 : (type_code == 's')                   ? 2
                                                                         : (type_code == 'l' || type_code == 'f') ? 4
                                                                         : (type_code == 'd')                     ? 8
@@ -48,7 +53,7 @@ constexpr uint8_t TypeCode_getElementSizeInner(const char type_code)
 #else
     return (type_code == 'b' || type_code == 'c' || type_code == 'o') ? 1 : (type_code == 's')                   ? 2
                                                                         : (type_code == 'l' || type_code == 'f') ? 4
-                                                                        : (type_code == 'd')                     ? 4
+                                                                        : (type_code == 'd')                     ? 8
                                                                                                                  : 4;
 #endif
 }

@@ -4,11 +4,11 @@
 #include <stdint.h>
 
 using duration_t = uint32_t;
-using time_t = uint32_t;
+using duration_time_t = uint32_t;
 static const duration_t INFINITE = 0xFFFFFFFF;
 
 void DurationClock_tick();
 duration_t DurationClock_tack();
 
-time_t DurationClock_now_ms();
+duration_time_t DurationClock_now_ms();
 #endif
