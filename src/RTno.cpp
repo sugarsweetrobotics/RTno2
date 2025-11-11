@@ -269,6 +269,9 @@ void RTno_loop()
   { // Timeout Error or Checksum Error
     if (ret == RESULT::PACKET_START_TIMEOUT)
     {
+      // 何も命令がない時。ハートビートを送る。
+      ret = RESULT::OK;
+      Transport_SendPacket(COMMAND::HEART_BEAT, ret, 0, NULL);
       return;
     }
     ret = (RESULT)m_pPacketBuffer[2];

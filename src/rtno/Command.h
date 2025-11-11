@@ -26,4 +26,5 @@ enum class COMMAND : char
   PACKET_ERROR_TIMEOUT = 'K',
 
   PLATFORM_PROFILE = 'T',
+  HEART_BEAT = 'W'
 };

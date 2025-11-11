@@ -36,10 +36,19 @@
  */
 #include <RTno2.h>
 
+#if defined(__AVR__)
 // #define TEST_SEQUENCE
 #define TEST_SIMPLE_BYTE_DATA
 #define TEST_SIMPLE_MULTIBYTE_DATA
 #define TEST_SIMPLE_BYTE_DATA_SEQUENCE
+#else
+
+#define TEST_SEQUENCE
+#define TEST_SIMPLE_BYTE_DATA
+#define TEST_SIMPLE_MULTIBYTE_DATA
+#define TEST_SIMPLE_BYTE_DATA_SEQUENCE
+
+#endif
 
 /**
  * This function is called at first.
